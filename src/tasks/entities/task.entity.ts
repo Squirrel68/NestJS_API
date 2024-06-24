@@ -1,6 +1,4 @@
 import { IsActive } from 'src/common/is-active.enum';
-import { Project } from 'src/projects/entities/project.entity';
-import { Timesheet } from 'src/timesheets/entities/timesheet.entity';
 import {
   Column,
   Entity,

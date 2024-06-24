@@ -1,10 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TasksModule } from './tasks/tasks.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProjectsModule } from './projects/projects.module';
-import { UsersModule } from './users/users.module';
-import { ClientsModule } from './clients/clients.module';
-import { TimesheetsModule } from './timesheets/timesheets.module';
 
 @Module({
   imports: [
@@ -19,10 +15,6 @@ import { TimesheetsModule } from './timesheets/timesheets.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    ProjectsModule,
-    UsersModule,
-    ClientsModule,
-    TimesheetsModule,
   ],
 })
 export class AppModule {}

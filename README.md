@@ -18,3 +18,9 @@ Cách 2
 - Read document TypeORM, NestJs
 - Sử dụng custom repository
 ```
+
+# Trace
+
+## After fix 1: @EntityRepository no longer be deprecated
+
+![alt text](image.png)

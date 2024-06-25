@@ -6,7 +6,4 @@ import { Column, Entity } from 'typeorm';
 export class ClientEntity extends BaseEntity {
   @Column()
   name: string;
-
-  @Column()
-  is_active: IsActive;
 }

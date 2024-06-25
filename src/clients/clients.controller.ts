@@ -12,7 +12,6 @@ import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { ClientEntity } from './entities/client.entity';
-import { filter } from 'rxjs';
 import { GetClientFilterDto } from './dto/get-client-filter.dto';
 
 @Controller('clients')

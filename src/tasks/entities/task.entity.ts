@@ -6,10 +6,6 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 export class TaskEntity extends BaseEntity {
   @Column()
   name: string;
-
-  @Column()
-  is_active: IsActive; // for soft delete (for archive and filter)
-
   // @ManyToOne(() => Project, (project) => project.tasks)
   // project: Project;
 

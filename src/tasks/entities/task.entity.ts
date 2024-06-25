@@ -1,11 +1,9 @@
+import { BaseEntity } from 'src/common/base.entity';
 import { IsActive } from 'src/common/is-active.enum';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Task {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class TaskEntity extends BaseEntity {
   @Column()
   name: string;
 

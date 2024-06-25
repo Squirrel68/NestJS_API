@@ -1,47 +1,29 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Task } from './entities/task.entity';
+import { TaskEntity } from './entities/task.entity';
 import { GetTasksFilterDto } from './dto/get-task-filter.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { TasksRepository } from './tasks.repository';
 import { IsActive } from 'src/common/is-active.enum';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class TasksService {
   constructor(
-    @InjectRepository(TasksRepository) private tasksRepository: TasksRepository,
+    @InjectRepository(TaskEntity)
+    private readonly taskRepository: Repository<TaskEntity>,
   ) {}
 
-  getTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
-    return this.tasksRepository.getTasks(filterDto);
-  }
-
-  async getTaskById(id: string): Promise<Task> {
-    const found = await this.tasksRepository.findOne(id);
-
-    if (!found) {
-      throw new NotFoundException(`Task with ID "${id}" not found`);
-    }
-
-    return found;
-  }
-
-  createTask(createTaskDto: CreateTaskDto): Promise<Task> {
-    return this.tasksRepository.createTask(createTaskDto);
-  }
-
-  async deleteTask(id: string): Promise<void> {
-    const result = await this.tasksRepository.delete(id);
-
-    if (result.affected === 0) {
-      throw new NotFoundException(`Task with ID "${id}" not found`);
-    }
-  }
-
-  async updateTaskIsActive(id: string, isActive: IsActive): Promise<Task> {
-    const task = await this.getTaskById(id);
-    task.is_active = isActive;
-    await this.tasksRepository.save(task);
+  async create(createTaskDto: CreateTaskDto): Promise<TaskEntity> {
+    const { name } = createTaskDto;
+    const task = this.taskRepository.create({
+      name,
+      is_active: IsActive.ACTIVE,
+    });
+    await this.taskRepository.save(task);
     return task;
+  }
+
+  async findAll(query: any): Promise<TaskEntity[]> {
+    return this.taskRepository.find(query);
   }
 }

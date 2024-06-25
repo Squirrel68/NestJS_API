@@ -6,37 +6,44 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
+import { ClientEntity } from './entities/client.entity';
+import { filter } from 'rxjs';
+import { GetClientFilterDto } from './dto/get-client-filter.dto';
 
 @Controller('clients')
 export class ClientsController {
   constructor(private readonly clientsService: ClientsService) {}
 
   @Post()
-  create(@Body() createClientDto: CreateClientDto) {
+  create(@Body() createClientDto: CreateClientDto): Promise<ClientEntity> {
     return this.clientsService.create(createClientDto);
   }
 
   @Get()
-  findAll() {
-    return this.clientsService.findAll();
+  findAll(@Query() filterDto: GetClientFilterDto): Promise<ClientEntity[]> {
+    return this.clientsService.findAll(filterDto);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string): Promise<ClientEntity> {
     return this.clientsService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateClientDto: UpdateClientDto,
+  ): Promise<ClientEntity> {
     return this.clientsService.update(id, updateClientDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.clientsService.remove(+id);
+  remove(@Param('id') id: string): Promise<void> {
+    return this.clientsService.remove(id);
   }
 }

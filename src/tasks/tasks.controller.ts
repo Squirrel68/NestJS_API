@@ -39,4 +39,8 @@ export class TasksController {
 
     return this.tasksService.update(id, is_active);
   }
+  @Delete(':id')
+  deleteTask(@Param('id') id: string): Promise<void> {
+    return this.tasksService.delete(id);
+  }
 }

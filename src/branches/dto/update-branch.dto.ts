@@ -1,9 +1,9 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { CreateTaskDto } from './create-task.dto';
+import { CreateBranchDto } from './create-branch.dto';
 import { IsEnum, IsNotEmpty } from 'class-validator';
 import { IsActive } from 'src/common/is-active.enum';
 
-export class UpdateTaskDto extends PartialType(CreateTaskDto) {
+export class UpdateBranchDto extends PartialType(CreateBranchDto) {
   @IsNotEmpty()
   name: string;
 

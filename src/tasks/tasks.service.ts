@@ -5,6 +5,7 @@ import { GetTasksFilterDto } from './dto/get-task-filter.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { IsActive } from 'src/common/is-active.enum';
 import { Repository } from 'typeorm';
+import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Injectable()
 export class TasksService {
@@ -52,8 +53,10 @@ export class TasksService {
     return task;
   }
 
-  async update(id: string, is_active: IsActive): Promise<TaskEntity> {
+  async update(id: string, updateTaskDto: UpdateTaskDto): Promise<TaskEntity> {
+    const { name, is_active } = updateTaskDto;
     const task = await this.findOne(id);
+    task.name = name;
     task.is_active = is_active;
     await this.taskRepository.save(task);
     return task;

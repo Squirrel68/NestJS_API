@@ -35,9 +35,7 @@ export class TasksController {
     @Param('id') id: string,
     @Body() updateTaskDto: UpdateTaskDto,
   ): Promise<TaskEntity> {
-    const { is_active } = updateTaskDto;
-
-    return this.tasksService.update(id, is_active);
+    return this.tasksService.update(id, updateTaskDto);
   }
   @Delete(':id')
   deleteTask(@Param('id') id: string): Promise<void> {

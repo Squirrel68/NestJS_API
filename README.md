@@ -1,41 +1,19 @@
-# Error 01: Error happen when custom repository in TypeORM, NestJs - Dependency Injection
+# CRUD task and handle Error & Validation
 
-# current task: CRUD task
-
-![alt text](image-1.png)
-
-## Solution:
-
-Cách 1
-
-```
-- Bỏ tầng Repo đi, code luôn logic trong service
-```
-
-Cách 2
-
-```
-- Read document TypeORM, NestJs
-- Sử dụng custom repository
-```
-
-# Trace
-
-## After fix 1: @EntityRepository no longer be deprecated
+## 1. Get all task - filter by status and search
 
 ![alt text](image.png)
 
-```
-- Thu tu xay base bang tay xem, ko dung generate
-- Try copy all code from sample project
-```
+## 2. Get task by id
 
-CORE: tìm hiểu về luồng Dependency Injection trong NestJs - YT NestJs đại pháp
+![alt text](image-1.png)
 
-## After fix 2:
+## 3. Create task
 
-Fix 2
+![alt text](image-2.png)
 
-```
-- Ko dung repository, dung service luon
-```
+## 4. Update task
+
+![alt text](image-3.png)
+
+## 5. Delete task

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Query } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TaskEntity } from './entities/task.entity';
 import { GetTasksFilterDto } from './dto/get-task-filter.dto';
@@ -23,7 +23,46 @@ export class TasksService {
     return task;
   }
 
-  async findAll(query: any): Promise<TaskEntity[]> {
-    return this.taskRepository.find(query);
+  async findAll(@Query() filterDto: GetTasksFilterDto): Promise<TaskEntity[]> {
+    const { is_active, search } = filterDto;
+    const query = this.taskRepository.createQueryBuilder('task');
+
+    if (is_active) {
+      query.andWhere('task.is_active = :is_active', { is_active });
+    }
+
+    if (search) {
+      query.andWhere('LOWER(task.name) LIKE LOWER(:search)', {
+        search: `%${search}%`,
+      });
+    }
+
+    const tasks = await query.getMany();
+    if (tasks.length === 0) {
+      throw new NotFoundException('No tasks found');
+    }
+    return tasks;
+  }
+
+  async findOne(id: string): Promise<TaskEntity> {
+    const task = await this.taskRepository.findOne(id);
+    if (!task) {
+      throw new NotFoundException(`Task with ID "${id}" not found`);
+    }
+    return task;
+  }
+
+  async update(id: string, is_active: IsActive): Promise<TaskEntity> {
+    const task = await this.findOne(id);
+    task.is_active = is_active;
+    await this.taskRepository.save(task);
+    return task;
+  }
+
+  async delete(id: string): Promise<void> {
+    const result = await this.taskRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Task with ID "${id}" not found`);
+    }
   }
 }

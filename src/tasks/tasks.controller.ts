@@ -18,19 +18,24 @@ import { GetTasksFilterDto } from './dto/get-task-filter.dto';
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
-  @Post()
-  create(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
-    return this.tasksService.createTask(createTaskDto);
-  }
-
   @Get()
-  findAll(@Query() filterDto: GetTasksFilterDto): Promise<Task[]> {
-    return this.tasksService.getAll(filterDto);
+  getTasks(@Query() filterDto: GetTasksFilterDto): Promise<Task[]> {
+    return this.tasksService.getTasks(filterDto);
   }
 
   @Get('/:id')
-  findOne(@Param('id') id: string): Promise<Task> {
+  getTaskById(@Param('id') id: string): Promise<Task> {
     return this.tasksService.getTaskById(id);
+  }
+
+  @Post()
+  createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
+    return this.tasksService.createTask(createTaskDto);
+  }
+
+  @Delete('/:id')
+  deleteTask(@Param('id') id: string): Promise<void> {
+    return this.tasksService.deleteTask(id);
   }
 
   @Patch('/:id/is_active')
@@ -40,10 +45,5 @@ export class TasksController {
   ): Promise<Task> {
     const { is_active } = updateTaskDto;
     return this.tasksService.updateTaskIsActive(id, is_active);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string): Promise<void> {
-    return this.tasksService.deleteTask(id);
   }
 }

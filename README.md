@@ -24,3 +24,18 @@ Cách 2
 ## After fix 1: @EntityRepository no longer be deprecated
 
 ![alt text](image.png)
+
+```
+- Thu tu xay base bang tay xem, ko dung generate
+- Try copy all code from sample project
+```
+
+CORE: tìm hiểu về luồng Dependency Injection trong NestJs - YT NestJs đại pháp
+
+## After fix 2:
+
+Fix 2
+
+```
+- Ko dung repository, dung service luon
+```

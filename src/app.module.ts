@@ -19,6 +19,7 @@ import { UsersModule } from './users/users.module';
       database: 'ncc-time-sheet',
       autoLoadEntities: true,
       synchronize: true,
+      // logging: true,
     }),
     ClientsModule,
     ProjectsModule,

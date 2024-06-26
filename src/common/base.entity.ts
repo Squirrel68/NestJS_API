@@ -13,7 +13,7 @@ export abstract class BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ default: IsActive.ACTIVE })
   is_active: IsActive;
 
   @CreateDateColumn()

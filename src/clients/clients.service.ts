@@ -27,7 +27,9 @@ export class ClientsService {
     @Query() filterDto: GetClientFilterDto,
   ): Promise<ClientEntity[]> {
     const { is_active, search } = filterDto;
-    const query = this.clientRepository.createQueryBuilder('client');
+    const query = this.clientRepository
+      .createQueryBuilder('client')
+      .leftJoinAndSelect('client.projects', 'projects');
     if (is_active) {
       query.andWhere('client.is_active = :is_active', { is_active });
     }
@@ -45,7 +47,9 @@ export class ClientsService {
   }
 
   async findOne(id: string): Promise<ClientEntity> {
-    const client = await this.clientRepository.findOne(id);
+    const client = await this.clientRepository.findOne(id, {
+      relations: ['projects'],
+    });
     if (!client) {
       throw new NotFoundException(`Client with ID "${id}" not found`);
     }

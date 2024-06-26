@@ -41,7 +41,9 @@ export class ProjectsService {
     @Query() filterDto: GetProjectFilterDto,
   ): Promise<ProjectEntity[]> {
     const { is_active, project_type, search } = filterDto;
-    const query = this.projectRepository.createQueryBuilder('project');
+    const query = this.projectRepository
+      .createQueryBuilder('project')
+      .leftJoinAndSelect('project.client', 'client');
 
     if (is_active) {
       query.andWhere('project.is_active = :is_active', { is_active });

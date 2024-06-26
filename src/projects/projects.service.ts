@@ -43,7 +43,9 @@ export class ProjectsService {
     const { is_active, project_type, search } = filterDto;
     const query = this.projectRepository
       .createQueryBuilder('project')
-      .leftJoinAndSelect('project.client', 'client');
+      .leftJoinAndSelect('project.client', 'client')
+      .leftJoinAndSelect('project.tasks', 'tasks')
+      .leftJoinAndSelect('project.timesheets', 'timesheets');
 
     if (is_active) {
       query.andWhere('project.is_active = :is_active', { is_active });
@@ -67,7 +69,9 @@ export class ProjectsService {
   }
 
   async findOne(id: string): Promise<ProjectEntity> {
-    const task = await this.projectRepository.findOne(id);
+    const task = await this.projectRepository.findOne(id, {
+      relations: ['client', 'tasks', 'timesheets'],
+    });
     if (!task) {
       throw new NotFoundException(`Project with ID "${id}" not found`);
     }

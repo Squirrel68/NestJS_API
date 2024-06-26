@@ -10,7 +10,7 @@ import { IsActive } from './is-active.enum';
 
 @Entity()
 export abstract class BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn('uuid', { name: 'id' })
   id: string;
 
   @Column({ default: IsActive.ACTIVE })

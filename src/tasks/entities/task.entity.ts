@@ -1,13 +1,17 @@
 import { BaseEntity } from 'src/common/base.entity';
-import { Column, Entity } from 'typeorm';
+import { ProjectEntity } from 'src/projects/entities/project.entity';
+import { TimesheetEntity } from 'src/timesheets/entities/timesheet.entity';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity()
 export class TaskEntity extends BaseEntity {
   @Column()
   name: string;
-  // @ManyToOne(() => Project, (project) => project.tasks)
-  // project: Project;
 
-  // @OneToMany(() => Timesheet, (timesheet) => timesheet.task)
-  // timesheets: Timesheet[];
+  @ManyToOne(() => ProjectEntity, (project) => project.tasks)
+  @JoinColumn({ name: 'project_id', referencedColumnName: 'id' })
+  project: ProjectEntity;
+
+  @OneToMany(() => TimesheetEntity, (timesheet) => timesheet.task)
+  timesheets: TimesheetEntity[];
 }

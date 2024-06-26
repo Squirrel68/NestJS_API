@@ -1,10 +1,33 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { TasksModule } from './tasks/tasks.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ClientsModule } from './clients/clients.module';
+import { ProjectsModule } from './projects/projects.module';
+import { BranchesModule } from './branches/branches.module';
+import { PositionsModule } from './positions/positions.module';
+import { UsersModule } from './users/users.module';
+import { TimesheetsModule } from './timesheets/timesheets.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    TasksModule,
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: 'localhost',
+      port: 3306,
+      username: 'root',
+      password: '',
+      database: 'ncc-time-sheet',
+      autoLoadEntities: true,
+      synchronize: true,
+      // logging: true,
+    }),
+    ClientsModule,
+    ProjectsModule,
+    BranchesModule,
+    PositionsModule,
+    UsersModule,
+    TimesheetsModule,
+  ],
 })
 export class AppModule {}

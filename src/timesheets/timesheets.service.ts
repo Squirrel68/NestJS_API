@@ -15,6 +15,9 @@ export class TimesheetsService {
   ) {}
 
   async create(createTimesheetDto: CreateTimesheetDto) {
+    if (createTimesheetDto.date_time === undefined) {
+      createTimesheetDto.date_time = new Date();
+    }
     const timesheet = this.timesheetRepository.create(createTimesheetDto);
     await this.timesheetRepository.save(timesheet);
     return timesheet;

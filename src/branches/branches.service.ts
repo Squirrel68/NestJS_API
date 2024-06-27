@@ -16,7 +16,6 @@ export class BranchesService {
     const { name } = createBranchDto;
     const branch = this.branchRepository.create({
       name,
-      is_active: IsActive.ACTIVE,
     });
     await this.branchRepository.save(branch);
     return branch;
@@ -31,7 +30,7 @@ export class BranchesService {
   }
 
   findOne(id: string): Promise<BranchEntity> {
-    const branch = this.branchRepository.findOne(id);
+    const branch = this.branchRepository.findOne({ where: { id } });
     if (!branch) {
       throw new NotFoundException(`Branch with ID "${id}" not found`);
     }

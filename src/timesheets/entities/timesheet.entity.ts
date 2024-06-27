@@ -16,7 +16,7 @@ export class TimesheetEntity extends BaseEntity {
   note: string;
 
   @Column({ default: StatusEnum.PENDING })
-  status: StatusEnum;
+  status: string;
 
   @ManyToOne(() => ProjectEntity, (project) => project.timesheets)
   @JoinColumn({ name: 'project_id', referencedColumnName: 'id' })

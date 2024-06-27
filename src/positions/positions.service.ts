@@ -31,7 +31,10 @@ export class PositionsService {
   }
 
   async findOne(id: string): Promise<PositionEntity> {
-    const position = await this.positionRepository.findOne(id);
+    const query = this.positionRepository
+      .createQueryBuilder('position')
+      .where('position.id = :id', { id });
+    const position = await query.getOne();
     if (!position) {
       throw new NotFoundException(`Position with ID "${id}" not found`);
     }

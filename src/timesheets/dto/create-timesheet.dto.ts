@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
 import { StatusEnum } from 'src/common/status.enum';
 
 export class CreateTimesheetDto {
@@ -12,5 +12,6 @@ export class CreateTimesheetDto {
   note: string;
 
   @IsOptional()
-  status: StatusEnum;
+  @IsEnum(StatusEnum)
+  status;
 }

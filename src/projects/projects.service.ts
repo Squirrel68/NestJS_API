@@ -69,9 +69,13 @@ export class ProjectsService {
   }
 
   async findOne(id: string): Promise<ProjectEntity> {
-    const task = await this.projectRepository.findOne(id, {
-      relations: ['client', 'tasks', 'timesheets'],
-    });
+    const query = this.projectRepository
+      .createQueryBuilder('project')
+      .leftJoinAndSelect('project.client', 'client')
+      .leftJoinAndSelect('project.tasks', 'tasks')
+      .leftJoinAndSelect('project.timesheets', 'timesheets')
+      .where('project.id = :id', { id });
+    const task = await query.getOne();
     if (!task) {
       throw new NotFoundException(`Project with ID "${id}" not found`);
     }

@@ -14,7 +14,7 @@ export abstract class BaseEntity {
   id: string;
 
   @Column({ default: IsActive.ACTIVE })
-  is_active: IsActive;
+  is_active: string;
 
   @CreateDateColumn()
   created_at: Timestamp;

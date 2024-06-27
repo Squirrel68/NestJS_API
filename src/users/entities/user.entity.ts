@@ -16,7 +16,7 @@ export class UserEntity extends BaseEntity {
   @Column()
   fullname: string;
   @Column()
-  sex: SexEnum;
+  sex: string;
   @Column()
   dob: Date;
   @Column()
@@ -34,9 +34,9 @@ export class UserEntity extends BaseEntity {
   @Column()
   start_date: Date;
   @Column({ default: UserTypeEnum.INTERN })
-  user_type: UserTypeEnum;
+  user_type: string;
   @Column({ default: RoleEnum.USER })
-  role: RoleEnum;
+  role: string;
   @Column()
   bankID: string;
   @Column()
@@ -44,5 +44,5 @@ export class UserEntity extends BaseEntity {
   @Column()
   basic_trainer_id: string;
   @Column()
-  level: LevelEnum;
+  level: string;
 }

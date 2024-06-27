@@ -11,7 +11,7 @@ export class ProjectEntity extends BaseEntity {
   name: string;
 
   @Column()
-  project_type: ProjectTypeEnum;
+  project_type: string;
 
   @Column()
   start_date: Date = new Date();

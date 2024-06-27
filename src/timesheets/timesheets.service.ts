@@ -36,7 +36,10 @@ export class TimesheetsService {
   }
 
   async findOne(id: string) {
-    const timesheet = await this.timesheetRepository.findOne(id);
+    const query = this.timesheetRepository
+      .createQueryBuilder('timesheet')
+      .where('timesheet.id = :id', { id });
+    const timesheet = await query.getOne();
     if (!timesheet) {
       throw new NotFoundException(`Timesheet with ID "${id}" not found`);
     }

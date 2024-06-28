@@ -7,21 +7,12 @@ import { BranchesModule } from './branches/branches.module';
 import { PositionsModule } from './positions/positions.module';
 import { UsersModule } from './users/users.module';
 import { TimesheetsModule } from './timesheets/timesheets.module';
+import { dataSourceOptions } from 'db/data-source';
 
 @Module({
   imports: [
     TasksModule,
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: '',
-      database: 'ncc-time-sheet',
-      autoLoadEntities: true,
-      synchronize: true,
-      // logging: true,
-    }),
+    TypeOrmModule.forRoot(dataSourceOptions),
     ClientsModule,
     ProjectsModule,
     BranchesModule,

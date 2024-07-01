@@ -1,10 +1,16 @@
-import { Injectable, NotFoundException, Query } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+  Query,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { IsActive } from 'src/common/is-active.enum';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -13,9 +19,25 @@ export class UsersService {
     private userRepository: Repository<UserEntity>,
   ) {}
   async create(createUserDto: CreateUserDto) {
-    const user = this.userRepository.create(createUserDto);
-    await this.userRepository.save(user);
-    return user;
+    const hashPassword = await this.hashPassword(createUserDto.password);
+    const user = await this.userRepository.findOne({
+      where: { username: createUserDto.username },
+    });
+    if (user) {
+      throw new NotFoundException('Username already exists');
+    }
+    return await this.userRepository.save({
+      ...createUserDto,
+      refresh_token: 'refresh_token',
+      password: hashPassword,
+    });
+  }
+
+  private async hashPassword(password: string): Promise<string> {
+    const saltRound = 10;
+    const salt = await bcrypt.genSalt(saltRound);
+    const hash = await bcrypt.hash(password, salt);
+    return hash;
   }
 
   async findAll(

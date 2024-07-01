@@ -13,4 +13,7 @@ export class CreateProjectDto {
 
   @IsNotEmpty()
   end_date: Date;
+
+  @IsOptional()
+  client_id: string;
 }

@@ -8,4 +8,7 @@ export class CreateTaskDto {
   @IsOptional()
   @IsEnum(IsActive)
   is_active: IsActive;
+
+  @IsOptional()
+  project_id: string;
 }

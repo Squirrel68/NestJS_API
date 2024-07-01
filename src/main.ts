@@ -12,7 +12,6 @@ const swaggerUi = require('swagger-ui-express');
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const file = fs.readFileSync(path.resolve('timesheet-swagger.yaml'), 'utf8');
-  console.log(file);
 
   const swaggerDocument = YAML.parse(file);
 

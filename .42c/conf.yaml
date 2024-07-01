@@ -1,0 +1,3 @@
+apis:
+  timesheet-swagger.yaml:
+    alias: api-title

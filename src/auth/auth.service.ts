@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UserEntity } from 'src/users/entities/user.entity';
@@ -19,6 +24,12 @@ export class AuthService {
 
   async register(registerUserDto: CreateUserDto): Promise<UserEntity> {
     const hashPassword = await this.hashPassword(registerUserDto.password);
+    const user = await this.userRepository.findOne({
+      where: { username: registerUserDto.username },
+    });
+    if (user) {
+      throw new NotFoundException('Username already exists');
+    }
     return await this.userRepository.save({
       ...registerUserDto,
       refresh_token: 'refresh_token',

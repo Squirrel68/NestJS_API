@@ -1,8 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { UserProjectService } from './user_project.service';
 import { CreateUserProjectDto } from './dto/create-user_project.dto';
 import { UpdateUserProjectDto } from './dto/update-user_project.dto';
+import { Roles } from 'src/auth/decorator/role.decorator';
+import { RoleEnum } from 'src/common/role.enum';
 
+@Roles(RoleEnum.ADMIN)
 @Controller('user-project')
 export class UserProjectController {
   constructor(private readonly userProjectService: UserProjectService) {}
@@ -23,7 +34,10 @@ export class UserProjectController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserProjectDto: UpdateUserProjectDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateUserProjectDto: UpdateUserProjectDto,
+  ) {
     return this.userProjectService.update(+id, updateUserProjectDto);
   }
 

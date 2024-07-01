@@ -46,4 +46,10 @@ export class CreateUserDto {
   basic_trainer_id: string;
   @IsEnum(LevelEnum)
   level: LevelEnum;
+
+  @IsNotEmpty()
+  branch_id: string;
+
+  @IsOptional()
+  position_id: string;
 }

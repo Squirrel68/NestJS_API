@@ -5,8 +5,6 @@ import { IsActive } from 'src/common/is-active.enum';
 
 export class UpdateBranchDto extends PartialType(CreateBranchDto) {
   @IsNotEmpty()
-  name: string;
-
   @IsEnum(IsActive)
   is_active: IsActive;
 }

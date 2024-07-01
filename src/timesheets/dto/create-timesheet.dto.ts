@@ -2,9 +2,6 @@ import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
 import { StatusEnum } from 'src/common/status.enum';
 
 export class CreateTimesheetDto {
-  @IsOptional()
-  date_time: Date;
-
   @IsNotEmpty()
   work_hours: number;
 
@@ -14,4 +11,13 @@ export class CreateTimesheetDto {
   @IsOptional()
   @IsEnum(StatusEnum)
   status;
+
+  @IsNotEmpty()
+  project_id: string;
+
+  @IsNotEmpty()
+  task_id: string;
+
+  @IsNotEmpty()
+  user_id: string;
 }

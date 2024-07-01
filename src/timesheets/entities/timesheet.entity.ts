@@ -2,14 +2,12 @@ import { BaseEntity } from 'src/common/base.entity';
 import { StatusEnum } from 'src/common/status.enum';
 import { ProjectEntity } from 'src/projects/entities/project.entity';
 import { TaskEntity } from 'src/tasks/entities/task.entity';
+import { UserEntity } from 'src/users/entities/user.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 @Entity()
 export class TimesheetEntity extends BaseEntity {
-  @Column()
-  date_time: Date;
-
-  @Column()
+  @Column({ type: 'float' })
   work_hours: number;
 
   @Column()
@@ -17,6 +15,10 @@ export class TimesheetEntity extends BaseEntity {
 
   @Column({ default: StatusEnum.PENDING })
   status: string;
+
+  @ManyToOne(() => UserEntity, (user) => user.timesheets)
+  @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
+  user: UserEntity;
 
   @ManyToOne(() => ProjectEntity, (project) => project.timesheets)
   @JoinColumn({ name: 'project_id', referencedColumnName: 'id' })

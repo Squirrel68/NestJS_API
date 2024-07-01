@@ -7,27 +7,24 @@ import { BranchesModule } from './branches/branches.module';
 import { PositionsModule } from './positions/positions.module';
 import { UsersModule } from './users/users.module';
 import { TimesheetsModule } from './timesheets/timesheets.module';
+import { dataSourceOptions } from 'db/data-source';
+import { UserProjectModule } from './user_project/user_project.module';
+import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     TasksModule,
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: '',
-      database: 'ncc-time-sheet',
-      autoLoadEntities: true,
-      synchronize: true,
-      // logging: true,
-    }),
+    TypeOrmModule.forRoot(dataSourceOptions),
     ClientsModule,
     ProjectsModule,
     BranchesModule,
     PositionsModule,
     UsersModule,
     TimesheetsModule,
+    UserProjectModule,
+    AuthModule,
+    ConfigModule.forRoot(),
   ],
 })
 export class AppModule {}

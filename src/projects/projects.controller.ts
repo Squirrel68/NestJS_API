@@ -11,7 +11,7 @@ import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectEntity } from './entities/project.entity';
-import { GetProjectFilterDto } from './dto/get-project-dto';
+import { GetProjectFilterDto } from './dto/filter-project-dto';
 import { RoleEnum } from 'src/common/role.enum';
 import { Roles } from 'src/auth/decorator/role.decorator';
 

@@ -4,7 +4,7 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectEntity } from './entities/project.entity';
 import { Repository } from 'typeorm';
-import { GetProjectFilterDto } from './dto/get-project-dto';
+import { GetProjectFilterDto } from './dto/filter-project-dto';
 import { IsActive } from 'src/common/is-active.enum';
 
 @Injectable()

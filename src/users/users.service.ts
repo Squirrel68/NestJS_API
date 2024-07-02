@@ -11,6 +11,7 @@ import { UserEntity } from './entities/user.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import { IsActive } from 'src/common/is-active.enum';
 import * as bcrypt from 'bcrypt';
+import { FilterUserDto } from './dto/filter-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -40,18 +41,32 @@ export class UsersService {
     return hash;
   }
 
-  async findAll(
-    @Query('is_active') is_active: IsActive,
-  ): Promise<UserEntity[]> {
-    const query = this.userRepository.createQueryBuilder('user');
-    if (is_active) {
-      query.andWhere('user.is_active = :is_active', { is_active });
-    }
-    const users = await query.getMany();
-    if (users.length === 0) {
-      throw new NotFoundException('No users found');
-    }
-    return users;
+  async findAll(@Query() query: FilterUserDto): Promise<any> {
+    const items_per_page = Number(query.items_per_page) || 10;
+    const page = Number(query.page) || 1;
+    const skip = items_per_page * (page - 1);
+    const is_active = query.is_active;
+    const [result, total] = await this.userRepository.findAndCount({
+      where: { is_active },
+      order: { created_at: 'DESC' },
+      take: items_per_page,
+      skip,
+    });
+    const lastPage = Math.ceil(total / items_per_page);
+    const nextPage = page + 1 > lastPage ? null : page + 1;
+    const prevPage = page - 1 < 1 ? null : page - 1;
+
+    return {
+      data: result,
+      pagination: {
+        total,
+        per_page: items_per_page,
+        current_page: page,
+        last_page: lastPage,
+        next_page: nextPage,
+        prev_page: prevPage,
+      },
+    };
   }
 
   async findOne(id: string): Promise<UserEntity> {

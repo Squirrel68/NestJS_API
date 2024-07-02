@@ -23,6 +23,7 @@ import { RoleEnum } from 'src/common/role.enum';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { storageConfig } from 'helpers/config';
 import { extname } from 'path';
+import { FilterUserDto } from './dto/filter-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -36,8 +37,8 @@ export class UsersController {
 
   @Roles(RoleEnum.ADMIN, RoleEnum.USER, RoleEnum.PM)
   @Get()
-  findAll(@Query('is_active') is_active: IsActive): Promise<UserEntity[]> {
-    return this.usersService.findAll(is_active);
+  findAll(@Query() query: FilterUserDto): Promise<UserEntity[]> {
+    return this.usersService.findAll(query);
   }
 
   @Roles(RoleEnum.ADMIN, RoleEnum.USER, RoleEnum.PM)

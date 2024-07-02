@@ -8,7 +8,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { IsActive } from 'src/common/is-active.enum';
 import * as bcrypt from 'bcrypt';
 
@@ -77,5 +77,9 @@ export class UsersService {
     user.is_active = IsActive.INACTIVE;
     await this.userRepository.save(user);
     return user;
+  }
+
+  async updateAvatar(id: string, avatar: string): Promise<UpdateResult> {
+    return await this.userRepository.update(id, { avatar });
   }
 }

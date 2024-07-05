@@ -15,16 +15,12 @@ export class ProjectsService {
   ) {}
   async create(createProjectDto: CreateProjectDto): Promise<any> {
     let { name, project_type, start_date, end_date } = createProjectDto;
-    if (start_date === undefined) {
-      start_date = new Date();
-    } else {
-      start_date = new Date(start_date);
-    }
-    if (end_date === undefined) {
-      end_date = new Date();
-    } else {
-      end_date = new Date(end_date);
-    }
+    start_date === undefined
+      ? (start_date = new Date())
+      : (start_date = new Date(start_date));
+    end_date === undefined
+      ? (end_date = new Date())
+      : (end_date = new Date(end_date));
 
     const project = this.projectRepository.create({
       name,

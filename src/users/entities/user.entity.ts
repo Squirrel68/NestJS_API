@@ -44,8 +44,6 @@ export class UserEntity extends BaseEntity {
   @Column()
   taxID: string;
   @Column()
-  basic_trainer_id: string;
-  @Column()
   level: string;
 
   @Column({ nullable: true, default: null })
@@ -66,4 +64,11 @@ export class UserEntity extends BaseEntity {
   @ManyToOne(() => PositionEntity, (position) => position.users)
   @JoinColumn({ name: 'position_id', referencedColumnName: 'id' })
   position: PositionEntity;
+
+  @ManyToOne(() => UserEntity, (user) => user.homies)
+  @JoinColumn({ name: 'basic_trainer_id', referencedColumnName: 'id' })
+  basic_trainer_id: string;
+
+  @OneToMany(() => UserEntity, (user) => user.basic_trainer_id)
+  homies: UserEntity[];
 }

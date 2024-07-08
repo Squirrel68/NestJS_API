@@ -5,13 +5,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { RegisterUserDto } from './dto/register.dto';
+import { RoleEnum } from 'src/common/role.enum';
 
 @Injectable()
 export class AuthService {
@@ -22,17 +23,20 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async register(registerUserDto: CreateUserDto): Promise<UserEntity> {
+  async register(registerUserDto: RegisterUserDto): Promise<UserEntity> {
     const hashPassword = await this.hashPassword(registerUserDto.password);
+
+    // check if username already exists
     const user = await this.userRepository.findOne({
       where: { username: registerUserDto.username },
     });
     if (user) {
-      throw new NotFoundException('Username already exists');
+      throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
+
     return await this.userRepository.save({
       ...registerUserDto,
-      refresh_token: 'refresh_token',
+      refresh_token: null,
       password: hashPassword,
     });
   }

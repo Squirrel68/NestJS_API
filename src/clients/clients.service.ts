@@ -14,13 +14,7 @@ export class ClientsService {
     private readonly clientRepository: Repository<ClientEntity>,
   ) {}
   async create(createClientDto: CreateClientDto): Promise<ClientEntity> {
-    const { name } = createClientDto;
-    const client = this.clientRepository.create({
-      name,
-      is_active: IsActive.ACTIVE,
-    });
-    await this.clientRepository.save(client);
-    return client;
+    return await this.clientRepository.save(createClientDto);
   }
 
   async findAll(
@@ -58,16 +52,8 @@ export class ClientsService {
     return client;
   }
 
-  async update(
-    id: string,
-    updateClientDto: UpdateClientDto,
-  ): Promise<ClientEntity> {
-    const { name, is_active } = updateClientDto;
-    const client = await this.findOne(id);
-    client.name = name;
-    client.is_active = is_active;
-    await this.clientRepository.save(client);
-    return client;
+  async update(updateClientDto: UpdateClientDto): Promise<ClientEntity> {
+    return await this.clientRepository.save(updateClientDto);
   }
 
   async remove(id: string): Promise<void> {

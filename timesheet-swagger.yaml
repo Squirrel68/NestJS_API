@@ -194,6 +194,36 @@ paths:
                   message:
                     type: string
                     example: Unauthorized
+    patch:
+      tags:
+        - users
+      summary: Update an existing user
+      description: Update an existing user by ID
+      operationId: updateUser
+
+      requestBody:
+        description: Update an existent user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Update user successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: User not found
+        '401':
+          description: Unauthorized
+
   /users/{id}:
     get:
       tags:
@@ -225,42 +255,6 @@ paths:
         '401':
           description: Unauthorized
 
-    patch:
-      tags:
-        - users
-      summary: Update an existing user
-      description: Update an existing user by ID
-      operationId: updateUser
-      parameters:
-        - name: id
-          in: path
-          description: ID of user to update
-          required: true
-          schema:
-            type: string
-          example: a24d7f25-c039-44b4-942a-4728b7df775b
-      requestBody:
-        description: Update an existent user
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-        required: true
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: Update user successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: User not found
-        '401':
-          description: Unauthorized
     delete:
       tags:
         - users
@@ -334,6 +328,71 @@ paths:
           description: Invalid input
         '401':
           description: Unauthorized
+  /users/import-users-from-file:
+    post:
+      tags:
+        - users
+      summary: Import users from file
+      description: Import users from file
+      operationId: importUsersFromFile
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Import users from file successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  generatedMaps:
+                    type: array
+                    example: []
+                  raw:
+                    type: array
+                    example: []
+                  affected:
+                    type: number
+                    example: 1
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+
+  /users/export-users-to-file:
+    get:
+      tags:
+        - users
+      summary: Export users to file
+      description: Export users to file
+      operationId: exportUsersToFile
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Export users to file successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Export users to file successful
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
 
   /clients:
     post:
@@ -398,21 +457,12 @@ paths:
                   message:
                     type: string
                     example: Unauthorized
-  /clients/{id}:
     patch:
       tags:
         - clients
       summary: Update an existing client
       description: Update an existing client by ID
       operationId: updateClient
-      parameters:
-        - name: id
-          in: path
-          description: ID of client to update
-          required: true
-          schema:
-            type: string
-          example: a24d7f25-c039-44b4-942a-4728b7df775b
       requestBody:
         description: Update an existent client
         content:
@@ -435,6 +485,8 @@ paths:
           description: Client not found
         '401':
           description: Unauthorized
+
+  /clients/{id}:
     delete:
       tags:
         - clients
@@ -496,6 +548,35 @@ paths:
           description: Invalid input
         '401':
           description: Unauthorized
+    patch:
+      tags:
+        - tasks
+      summary: Update an existing task
+      description: Update an existing task by ID
+      operationId: updateTask
+      requestBody:
+        description: Update an existent task
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Update task successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Task not found
+        '401':
+          description: Unauthorized
+
   /tasks/{id}:
     get:
       tags:
@@ -527,42 +608,6 @@ paths:
         '401':
           description: Unauthorized
 
-    patch:
-      tags:
-        - tasks
-      summary: Update an existing task
-      description: Update an existing task by ID
-      operationId: updateTask
-      parameters:
-        - name: id
-          in: path
-          description: ID of task to update
-          required: true
-          schema:
-            type: string
-          example: a24d7f25-c039-44b4-942a-4728b7df775b
-      requestBody:
-        description: Update an existent task
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Task'
-        required: true
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: Update task successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Task'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Task not found
-        '401':
-          description: Unauthorized
     delete:
       tags:
         - tasks
@@ -650,28 +695,13 @@ paths:
                     type: string
                     example: Unauthorized
 
-  /tasks/{id}/{status}:
+  /tasks/archive:
     patch:
       tags:
         - tasks
       summary: Archive task
       description: Update task status by ID
       operationId: updateTaskStatus
-      parameters:
-        - name: id
-          in: path
-          description: ID of task to update
-          required: true
-          schema:
-            type: string
-          example: a24d7f25-c039-44b4-942a-4728b7df775b
-        - name: status
-          in: path
-          description: Status of task to update
-          required: true
-          schema:
-            type: string
-          example: ACTIVE
       security:
         - BearerAuth: []
       responses:
@@ -745,8 +775,6 @@ paths:
           description: Invalid input
         '401':
           description: Unauthorized
-
-  /projects/{id}:
     patch:
       tags:
         - projects
@@ -1092,47 +1120,6 @@ paths:
         '401':
           description: Unauthorized
 
-  /timesheets/reject-timesheets:
-    post:
-      tags:
-        - PM timesheets
-      summary: Reject timesheet by week
-      description: PM reject timesheet by week
-      operationId: rejectTimesheetByWeek
-      requestBody:
-        description: Reject timesheet by week
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                from_date:
-                  type: string
-                  format: date-time
-                  example: '2024-07-01T10:56:04.000Z'
-                to_date:
-                  type: string
-                  format: date-time
-                  example: '2024-07-07T10:56:04.000Z'
-        required: true
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: Reject timesheet by week successful
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Reject timesheet by week successful
-        '400':
-          description: Invalid input
-        '401':
-          description: Unauthorized
-
 components:
   schemas:
     LoginBody:
@@ -1223,6 +1210,12 @@ components:
         avatar:
           type: string
           nullable: true
+        branch_id:
+          type: string
+          example: a24d7f25-c039-44b4-942a-4728b7df775b
+        position_id:
+          type: string
+          example: a24d7f25-c039-44b4-942a-4728b7df775b
         is_active:
           type: string
           example: ACTIVE
@@ -1303,14 +1296,6 @@ components:
           type: string
           format: date-time
           example: '2024-07-01T10:56:04.000Z'
-        users:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
-        tasks:
-          type: array
-          items:
-            $ref: '#/components/schemas/Task'
         is_active:
           type: string
           example: ACTIVE
@@ -1334,14 +1319,6 @@ components:
         project_id:
           type: string
           example: a24d7f25-c039-44b4-942a-4728b7df775b
-        timesheets:
-          type: array
-          example:
-            [
-              a24d7f25-c039-44b4-942a-4728b7df775b,
-              a24d7f25-c039-44b4-942a-4728b7df775b,
-            ]
-
         is_active:
           type: string
           example: ACTIVE

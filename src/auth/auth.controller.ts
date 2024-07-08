@@ -1,16 +1,16 @@
 import { Body, Controller, Post, SetMetadata } from '@nestjs/common';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { LoginUserDto } from './dto/login-user.dto';
 import { PublicAPI } from './decorator/public.decorator';
+import { RegisterUserDto } from './dto/register.dto';
 
 @PublicAPI()
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
   @Post('register')
-  register(@Body() registerDto: CreateUserDto): Promise<UserEntity> {
+  register(@Body() registerDto: RegisterUserDto): Promise<UserEntity> {
     return this.authService.register(registerDto);
   }
 

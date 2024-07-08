@@ -1,10 +1,11 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Expose } from 'class-transformer';
+import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
 import { LevelEnum } from 'src/common/level.enum';
 import { RoleEnum } from 'src/common/role.enum';
 import { SexEnum } from 'src/common/sex.enum';
 import { UserTypeEnum } from 'src/common/user-type.enum';
 
-export class CreateUserDto {
+export class RegisterUserDto {
   @IsNotEmpty()
   username: string;
   @IsNotEmpty()
@@ -35,20 +36,16 @@ export class CreateUserDto {
   start_date: Date;
   @IsEnum(UserTypeEnum)
   user_type: UserTypeEnum;
-  @IsEnum(RoleEnum)
-  role: RoleEnum;
-
   @IsNotEmpty()
   bankID: string;
   @IsNotEmpty()
   taxID: string;
-  @IsOptional()
+  @IsNotEmpty()
   basic_trainer_id: string;
   @IsEnum(LevelEnum)
   level: LevelEnum;
 
-  @IsNotEmpty({ message: 'Branch ID is required' })
-  @IsString({ message: 'Branch ID must be a string' })
+  @IsNotEmpty()
   branch_id: string;
 
   @IsNotEmpty()

@@ -67,8 +67,8 @@ export class UserEntity extends BaseEntity {
 
   @ManyToOne(() => UserEntity, (user) => user.homies)
   @JoinColumn({ name: 'basic_trainer_id', referencedColumnName: 'id' })
-  basic_trainer_id: string;
+  trainer: UserEntity;
 
-  @OneToMany(() => UserEntity, (user) => user.basic_trainer_id)
+  @OneToMany(() => UserEntity, (user) => user.trainer)
   homies: UserEntity[];
 }

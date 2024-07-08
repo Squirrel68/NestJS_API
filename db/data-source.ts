@@ -26,7 +26,8 @@ export const dataSourceOptions: DataSourceOptions = {
     TimesheetEntity,
   ],
   migrations: ['dist/db/migrations/*.js'],
-  synchronize: false,
+  synchronize: true,
+  // synchronize: false,
   // logging: true,
 };
 

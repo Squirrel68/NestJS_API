@@ -3,34 +3,38 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectEntity } from './entities/project.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { GetProjectFilterDto } from './dto/filter-project-dto';
 import { IsActive } from 'src/common/is-active.enum';
+import { TaskEntity } from 'src/tasks/entities/task.entity';
+import { ManageTasksDto } from './dto/manage-task.dto';
+import { UserProjectEntity } from 'src/user_project/entities/user_project.entity';
+import { TasksService } from 'src/tasks/tasks.service';
 
 @Injectable()
 export class ProjectsService {
   constructor(
     @InjectRepository(ProjectEntity)
     private readonly projectRepository: Repository<ProjectEntity>,
+
+    private taskService: TasksService,
   ) {}
+
   async create(createProjectDto: CreateProjectDto): Promise<any> {
-    let { name, project_type, start_date, end_date } = createProjectDto;
+    let { start_date, end_date } = createProjectDto;
     start_date === undefined
       ? (start_date = new Date())
       : (start_date = new Date(start_date));
     end_date === undefined
       ? (end_date = new Date())
       : (end_date = new Date(end_date));
+    createProjectDto.start_date = start_date;
+    createProjectDto.end_date = end_date;
+    return await this.projectRepository.save(createProjectDto);
+  }
 
-    const project = this.projectRepository.create({
-      name,
-      project_type,
-      start_date,
-      end_date,
-      is_active: IsActive.ACTIVE,
-    });
-    await this.projectRepository.save(project);
-    return project;
+  async update(updateProjectDto: UpdateProjectDto): Promise<ProjectEntity> {
+    return await this.projectRepository.save(updateProjectDto);
   }
 
   async findAll(
@@ -56,7 +60,6 @@ export class ProjectsService {
         search: `%${search}%`,
       });
     }
-
     const projects = await query.getMany();
     if (projects.length === 0) {
       throw new NotFoundException('No projects found');
@@ -65,32 +68,28 @@ export class ProjectsService {
   }
 
   async findOne(id: string): Promise<ProjectEntity> {
-    const query = this.projectRepository
-      .createQueryBuilder('project')
-      .leftJoinAndSelect('project.client', 'client')
-      .leftJoinAndSelect('project.tasks', 'tasks')
-      .leftJoinAndSelect('project.timesheets', 'timesheets')
-      .where('project.id = :id', { id });
-    const task = await query.getOne();
+    const task = await this.projectRepository.findOne({
+      where: { id, is_active: IsActive.ACTIVE },
+      relations: ['client', 'tasks', 'timesheets', 'userProjects'],
+    });
     if (!task) {
       throw new NotFoundException(`Project with ID "${id}" not found`);
     }
     return task;
   }
 
-  async update(
-    id: string,
-    updateProjectDto: UpdateProjectDto,
-  ): Promise<ProjectEntity> {
-    const project = await this.findOne(id);
-    const { name, project_type, start_date, end_date, is_active } =
-      updateProjectDto;
-    project.name = name;
-    project.project_type = project_type;
-    project.start_date = start_date;
-    project.end_date = end_date;
-    project.is_active = is_active;
-    await this.projectRepository.save(project);
-    return project;
+  async addTaskToProject(manageTasksDto: ManageTasksDto): Promise<any> {
+    const { project_id, task_id } = manageTasksDto;
+    const project = await this.findOne(project_id);
+    const task = await this.taskService.findOne(task_id);
+    project.tasks.push(task);
+    return await this.projectRepository.save(project);
+  }
+
+  async removeTaskFromProject(manageTasksDto: ManageTasksDto): Promise<any> {
+    const { project_id, task_id } = manageTasksDto;
+    const project = await this.findOne(project_id);
+    project.tasks = project.tasks.filter((task) => task.id !== task_id);
+    return await this.projectRepository.save(project);
   }
 }

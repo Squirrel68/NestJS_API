@@ -15,13 +15,7 @@ export class TasksService {
   ) {}
 
   async create(createTaskDto: CreateTaskDto): Promise<TaskEntity> {
-    const { name } = createTaskDto;
-    const task = this.taskRepository.create({
-      name,
-      is_active: IsActive.ACTIVE,
-    });
-    await this.taskRepository.save(task);
-    return task;
+    return await this.taskRepository.save(createTaskDto);
   }
 
   async findAll(@Query() filterDto: GetTasksFilterDto): Promise<TaskEntity[]> {
@@ -56,13 +50,8 @@ export class TasksService {
     return task;
   }
 
-  async update(id: string, updateTaskDto: UpdateTaskDto): Promise<TaskEntity> {
-    const { name, is_active } = updateTaskDto;
-    const task = await this.findOne(id);
-    task.name = name;
-    task.is_active = is_active;
-    await this.taskRepository.save(task);
-    return task;
+  async update(updateTaskDto: UpdateTaskDto): Promise<TaskEntity> {
+    return await this.taskRepository.save(updateTaskDto);
   }
 
   async delete(id: string): Promise<void> {
@@ -70,5 +59,11 @@ export class TasksService {
     if (result.affected === 0) {
       throw new NotFoundException(`Task with ID "${id}" not found`);
     }
+  }
+
+  async archiveTask(id: string, is_active: IsActive): Promise<TaskEntity> {
+    const task = await this.findOne(id);
+    task.is_active = is_active;
+    return await this.taskRepository.save(task);
   }
 }

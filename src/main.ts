@@ -15,9 +15,14 @@ async function bootstrap() {
 
   const swaggerDocument = YAML.parse(file);
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true, // solve "Excluding unknown property" error https://github.com/typestack/class-transformer/issues/700
+    }),
+  );
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+  app.enableCors();
   await app.listen(3000);
 
   if (module.hot) {

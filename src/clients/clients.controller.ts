@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   Query,
-  SetMetadata,
 } from '@nestjs/common';
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
@@ -36,12 +35,9 @@ export class ClientsController {
     return this.clientsService.findOne(id);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateClientDto: UpdateClientDto,
-  ): Promise<ClientEntity> {
-    return this.clientsService.update(id, updateClientDto);
+  @Patch()
+  update(@Body() updateClientDto: UpdateClientDto): Promise<ClientEntity> {
+    return this.clientsService.update(updateClientDto);
   }
 
   @Delete(':id')

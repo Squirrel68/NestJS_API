@@ -14,8 +14,8 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { GetTasksFilterDto } from './dto/get-task-filter.dto';
 import { TaskEntity } from './entities/task.entity';
 import { Roles } from 'src/auth/decorator/role.decorator';
-import { UserEntity } from 'src/users/entities/user.entity';
 import { RoleEnum } from 'src/common/role.enum';
+import { IsActive } from 'src/common/is-active.enum';
 
 @Controller('tasks')
 export class TasksController {
@@ -40,17 +40,23 @@ export class TasksController {
   }
 
   @Roles(RoleEnum.ADMIN)
-  @Patch(':id')
-  updateTask(
-    @Param('id') id: string,
-    @Body() updateTaskDto: UpdateTaskDto,
-  ): Promise<TaskEntity> {
-    return this.tasksService.update(id, updateTaskDto);
+  @Patch()
+  updateTask(@Body() updateTaskDto: UpdateTaskDto): Promise<TaskEntity> {
+    return this.tasksService.update(updateTaskDto);
   }
 
   @Roles(RoleEnum.ADMIN)
   @Delete(':id')
   deleteTask(@Param('id') id: string): Promise<void> {
     return this.tasksService.delete(id);
+  }
+
+  @Roles(RoleEnum.ADMIN)
+  @Patch(':id/archive')
+  archiveTask(
+    @Param('id') id: string,
+    @Body() is_active: IsActive,
+  ): Promise<TaskEntity> {
+    return this.tasksService.archiveTask(id, is_active);
   }
 }

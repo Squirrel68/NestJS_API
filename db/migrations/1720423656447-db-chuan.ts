@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class AddRelationBasicTrainerId1719904751943 implements MigrationInterface {
-    name = 'AddRelationBasicTrainerId1719904751943'
+export class DbChuan1720423656447 implements MigrationInterface {
+    name = 'DbChuan1720423656447'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`ALTER TABLE \`task_entity\` DROP FOREIGN KEY \`FK_810905c71760664b91c926035a2\``);
@@ -18,12 +18,12 @@ export class AddRelationBasicTrainerId1719904751943 implements MigrationInterfac
         await queryRunner.query(`ALTER TABLE \`timesheet_entity\` CHANGE \`user_id\` \`user_id\` varchar(36) NULL`);
         await queryRunner.query(`ALTER TABLE \`timesheet_entity\` CHANGE \`project_id\` \`project_id\` varchar(36) NULL`);
         await queryRunner.query(`ALTER TABLE \`timesheet_entity\` CHANGE \`task_id\` \`task_id\` varchar(36) NULL`);
-        await queryRunner.query(`ALTER TABLE \`user_entity\` DROP FOREIGN KEY \`FK_8a3837422c16f64938224a786bd\``);
-        await queryRunner.query(`ALTER TABLE \`user_entity\` DROP FOREIGN KEY \`FK_64c4bc04accc0e6911d31299704\``);
         await queryRunner.query(`ALTER TABLE \`user_entity\` CHANGE \`refresh_token\` \`refresh_token\` varchar(255) NULL`);
         await queryRunner.query(`ALTER TABLE \`user_entity\` CHANGE \`avatar\` \`avatar\` varchar(255) NULL`);
-        await queryRunner.query(`ALTER TABLE \`user_entity\` CHANGE \`branch_id\` \`branch_id\` varchar(36) NULL`);
-        await queryRunner.query(`ALTER TABLE \`user_entity\` CHANGE \`position_id\` \`position_id\` varchar(36) NULL`);
+        await queryRunner.query(`ALTER TABLE \`user_entity\` DROP COLUMN \`branch_id\``);
+        await queryRunner.query(`ALTER TABLE \`user_entity\` ADD \`branch_id\` varchar(36) NULL`);
+        await queryRunner.query(`ALTER TABLE \`user_entity\` DROP COLUMN \`position_id\``);
+        await queryRunner.query(`ALTER TABLE \`user_entity\` ADD \`position_id\` varchar(36) NULL`);
         await queryRunner.query(`ALTER TABLE \`user_entity\` DROP COLUMN \`basic_trainer_id\``);
         await queryRunner.query(`ALTER TABLE \`user_entity\` ADD \`basic_trainer_id\` varchar(36) NULL`);
         await queryRunner.query(`ALTER TABLE \`task_entity\` ADD CONSTRAINT \`FK_810905c71760664b91c926035a2\` FOREIGN KEY (\`project_id\`) REFERENCES \`project_entity\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`);
@@ -50,13 +50,13 @@ export class AddRelationBasicTrainerId1719904751943 implements MigrationInterfac
         await queryRunner.query(`ALTER TABLE \`user_project_entity\` DROP FOREIGN KEY \`FK_3a49fb53a91a4dc855b0c7e8d34\``);
         await queryRunner.query(`ALTER TABLE \`task_entity\` DROP FOREIGN KEY \`FK_810905c71760664b91c926035a2\``);
         await queryRunner.query(`ALTER TABLE \`user_entity\` DROP COLUMN \`basic_trainer_id\``);
-        await queryRunner.query(`ALTER TABLE \`user_entity\` ADD \`basic_trainer_id\` varchar(255) NOT NULL`);
-        await queryRunner.query(`ALTER TABLE \`user_entity\` CHANGE \`position_id\` \`position_id\` varchar(36) NULL DEFAULT 'NULL'`);
-        await queryRunner.query(`ALTER TABLE \`user_entity\` CHANGE \`branch_id\` \`branch_id\` varchar(36) NULL DEFAULT 'NULL'`);
+        await queryRunner.query(`ALTER TABLE \`user_entity\` ADD \`basic_trainer_id\` varchar(255) NULL DEFAULT 'NULL'`);
+        await queryRunner.query(`ALTER TABLE \`user_entity\` DROP COLUMN \`position_id\``);
+        await queryRunner.query(`ALTER TABLE \`user_entity\` ADD \`position_id\` varchar(255) NOT NULL`);
+        await queryRunner.query(`ALTER TABLE \`user_entity\` DROP COLUMN \`branch_id\``);
+        await queryRunner.query(`ALTER TABLE \`user_entity\` ADD \`branch_id\` varchar(255) NOT NULL`);
         await queryRunner.query(`ALTER TABLE \`user_entity\` CHANGE \`avatar\` \`avatar\` varchar(255) NULL DEFAULT 'NULL'`);
         await queryRunner.query(`ALTER TABLE \`user_entity\` CHANGE \`refresh_token\` \`refresh_token\` varchar(255) NULL DEFAULT 'NULL'`);
-        await queryRunner.query(`ALTER TABLE \`user_entity\` ADD CONSTRAINT \`FK_64c4bc04accc0e6911d31299704\` FOREIGN KEY (\`position_id\`) REFERENCES \`position_entity\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE \`user_entity\` ADD CONSTRAINT \`FK_8a3837422c16f64938224a786bd\` FOREIGN KEY (\`branch_id\`) REFERENCES \`branch_entity\`(\`id\`) ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE \`timesheet_entity\` CHANGE \`task_id\` \`task_id\` varchar(36) NULL DEFAULT 'NULL'`);
         await queryRunner.query(`ALTER TABLE \`timesheet_entity\` CHANGE \`project_id\` \`project_id\` varchar(36) NULL DEFAULT 'NULL'`);
         await queryRunner.query(`ALTER TABLE \`timesheet_entity\` CHANGE \`user_id\` \`user_id\` varchar(36) NULL DEFAULT 'NULL'`);

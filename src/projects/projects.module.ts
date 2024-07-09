@@ -1,22 +1,24 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { ProjectsController } from './projects.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProjectEntity } from './entities/project.entity';
 import { TaskEntity } from 'src/tasks/entities/task.entity';
-import { UserProjectEntity } from 'src/user_project/entities/user_project.entity';
 import { TasksService } from 'src/tasks/tasks.service';
-import { UsersService } from 'src/users/users.service';
-import { UserEntity } from 'src/users/entities/user.entity';
 import { TasksModule } from 'src/tasks/tasks.module';
-import { UserProjectService } from 'src/user_project/user_project.service';
+import { UserProjectModule } from 'src/user_project/user_project.module';
+import { UsersModule } from 'src/users/users.module';
+import { UserEntity } from 'src/users/entities/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ProjectEntity, TaskEntity, UserProjectEntity]),
+    TypeOrmModule.forFeature([ProjectEntity, TaskEntity, UserEntity]),
     TasksModule,
+    UsersModule,
+    forwardRef(() => UserProjectModule),
   ],
   controllers: [ProjectsController],
-  providers: [ProjectsService, TasksService, UserProjectService],
+  providers: [ProjectsService, TasksService],
+  exports: [ProjectsService],
 })
 export class ProjectsModule {}

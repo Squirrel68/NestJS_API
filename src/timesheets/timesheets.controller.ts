@@ -49,7 +49,7 @@ export class TimesheetsController {
   @Roles(RoleEnum.PM)
   @Patch(':id/status')
   updateStatus(@Param('id') id: string, @Body('status') status: StatusEnum) {
-    console.log('status', status);
+    // console.log('status', status);
   }
 
   @Roles(RoleEnum.ADMIN, RoleEnum.USER, RoleEnum.PM)

@@ -1,9 +1,9 @@
 import { IsNotEmpty } from 'class-validator';
 
-export class ManageUserDto {
+export class ManageUsersDto {
   @IsNotEmpty()
   project_id: string;
 
   @IsNotEmpty()
-  user_id: string;
+  user_project_id: string;
 }

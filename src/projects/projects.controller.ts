@@ -15,6 +15,8 @@ import { GetProjectFilterDto } from './dto/filter-project-dto';
 import { RoleEnum } from 'src/common/role.enum';
 import { Roles } from 'src/auth/decorator/role.decorator';
 import { ManageTasksDto } from './dto/manage-task.dto';
+import { ManageUsersDto } from './dto/manage-user.dto';
+import { CreateUserProjectDto } from 'src/user_project/dto/create-user_project.dto';
 
 @Controller('projects')
 export class ProjectsController {
@@ -44,18 +46,6 @@ export class ProjectsController {
     return this.projectsService.update(updateProjectDto);
   }
 
-  // @Roles(RoleEnum.ADMIN)
-  // @Post('add-user-to-project')
-  // addUserToProject(@Body() manageTasksDto: ManageTasksDto): Promise<any> {
-  //   return this.projectsService.addUserToProject(manageTasksDto);
-  // }
-
-  // @Roles(RoleEnum.ADMIN)
-  // @Post('remove-user-from-project')
-  // removeUserFromProject(@Body() manageTasksDto: ManageTasksDto): Promise<any> {
-  //   return this.projectsService.removeUserFromProject(manageTasksDto);
-  // }
-
   @Roles(RoleEnum.ADMIN)
   @Post('add-task')
   addTaskToProject(@Body() manageTasksDto: ManageTasksDto): Promise<any> {
@@ -66,5 +56,21 @@ export class ProjectsController {
   @Post('remove-task')
   removeTaskFromProject(@Body() manageTasksDto: ManageTasksDto): Promise<any> {
     return this.projectsService.removeTaskFromProject(manageTasksDto);
+  }
+
+  @Roles(RoleEnum.ADMIN)
+  @Post('add-user')
+  addUserToProject(
+    @Body() createUserProjectDto: CreateUserProjectDto,
+  ): Promise<any> {
+    return this.projectsService.addUserToProject(createUserProjectDto);
+  }
+
+  @Roles(RoleEnum.ADMIN)
+  @Post('remove-user')
+  removeUserFromProject(
+    @Body() CreateUserProjectDto: CreateUserProjectDto,
+  ): Promise<any> {
+    return this.projectsService.removeUserFromProject(CreateUserProjectDto);
   }
 }

@@ -81,7 +81,38 @@ export class TimesheetsService {
     };
   }
 
-  async getByStatus() {}
+  async getByStatus(query: StartEndDateDto) {
+    const status = query.status;
+    const timesheets = await this.timesheetRepository.find({
+      where: { status },
+    });
 
-  async approveTimesheet() {}
+    if (!timesheets || timesheets.length === 0) {
+      throw new NotFoundException('Timesheet not found');
+    }
+    return timesheets;
+  }
+
+  async approveTimesheet(body: StartEndDateDto) {
+    const { start_date, end_date } = body;
+    const start = startOfDay(new Date(start_date));
+    const end = endOfDay(new Date(end_date));
+    //1. update all timesheet of user_id, start_date, end_date from new to pending
+    const sql = this.timesheetRepository
+      .createQueryBuilder('timesheet')
+      .leftJoinAndSelect('timesheet.user', 'user')
+      .andWhere('timesheet.created_at BETWEEN :start AND :end', { start, end });
+    const timesheets = await sql.getMany();
+    if (!timesheets || timesheets.length === 0) {
+      throw new NotFoundException('Timesheet not found');
+    }
+    timesheets.forEach((timesheet) => {
+      timesheet.status = StatusEnum.APPROVED;
+      this.timesheetRepository.save(timesheet);
+    });
+    return {
+      message: `Approved ${timesheets.length} timesheet`,
+      data: timesheets,
+    };
+  }
 }

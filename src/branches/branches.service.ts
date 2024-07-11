@@ -13,12 +13,7 @@ export class BranchesService {
     private readonly branchRepository: Repository<BranchEntity>,
   ) {}
   async create(createBranchDto: CreateBranchDto): Promise<BranchEntity> {
-    const { name } = createBranchDto;
-    const branch = this.branchRepository.create({
-      name,
-    });
-    await this.branchRepository.save(branch);
-    return branch;
+    return await this.branchRepository.save(createBranchDto);
   }
 
   async findAll(): Promise<BranchEntity[]> {

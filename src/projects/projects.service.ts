@@ -1,40 +1,55 @@
-import { Injectable, NotFoundException, Query } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+  Query,
+} from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectEntity } from './entities/project.entity';
-import { Repository } from 'typeorm';
-import { GetProjectFilterDto } from './dto/get-project-dto';
+import { In, Repository } from 'typeorm';
+import { GetProjectFilterDto } from './dto/filter-project-dto';
 import { IsActive } from 'src/common/is-active.enum';
+import { ManageTasksDto } from './dto/manage-task.dto';
+import { TasksService } from 'src/tasks/tasks.service';
+import { UserProjectService } from 'src/user_project/user_project.service';
+import { CreateUserProjectDto } from 'src/user_project/dto/create-user_project.dto';
+import { UsersService } from 'src/users/users.service';
+import { UserEntity } from 'src/users/entities/user.entity';
+import { ManageUsersDto } from './dto/manage-user.dto';
 
 @Injectable()
 export class ProjectsService {
   constructor(
     @InjectRepository(ProjectEntity)
     private readonly projectRepository: Repository<ProjectEntity>,
-  ) {}
-  async create(createProjectDto: CreateProjectDto): Promise<any> {
-    let { name, project_type, start_date, end_date } = createProjectDto;
-    if (start_date === undefined) {
-      start_date = new Date();
-    } else {
-      start_date = new Date(start_date);
-    }
-    if (end_date === undefined) {
-      end_date = new Date();
-    } else {
-      end_date = new Date(end_date);
-    }
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+    private taskService: TasksService,
 
-    const project = this.projectRepository.create({
-      name,
-      project_type,
-      start_date,
-      end_date,
-      is_active: IsActive.ACTIVE,
-    });
-    await this.projectRepository.save(project);
-    return project;
+    @Inject(forwardRef(() => UserProjectService))
+    private userProjectService: UserProjectService,
+
+    private readonly usersService: UsersService,
+  ) {}
+
+  async create(createProjectDto: CreateProjectDto): Promise<any> {
+    let { start_date, end_date } = createProjectDto;
+    start_date === undefined
+      ? (start_date = new Date())
+      : (start_date = new Date(start_date));
+    end_date === undefined
+      ? (end_date = new Date())
+      : (end_date = new Date(end_date));
+    createProjectDto.start_date = start_date;
+    createProjectDto.end_date = end_date;
+    return await this.projectRepository.save(createProjectDto);
+  }
+
+  async update(updateProjectDto: UpdateProjectDto): Promise<ProjectEntity> {
+    return await this.projectRepository.save(updateProjectDto);
   }
 
   async findAll(
@@ -60,7 +75,6 @@ export class ProjectsService {
         search: `%${search}%`,
       });
     }
-
     const projects = await query.getMany();
     if (projects.length === 0) {
       throw new NotFoundException('No projects found');
@@ -69,32 +83,65 @@ export class ProjectsService {
   }
 
   async findOne(id: string): Promise<ProjectEntity> {
-    const query = this.projectRepository
+    const query = await this.projectRepository
       .createQueryBuilder('project')
-      .leftJoinAndSelect('project.client', 'client')
-      .leftJoinAndSelect('project.tasks', 'tasks')
-      .leftJoinAndSelect('project.timesheets', 'timesheets')
-      .where('project.id = :id', { id });
-    const task = await query.getOne();
-    if (!task) {
-      throw new NotFoundException(`Project with ID "${id}" not found`);
+      .where({
+        id,
+        is_active: IsActive.ACTIVE,
+      })
+      .leftJoin('project.tasks', 'task')
+      .leftJoin('project.userProjects', 'userProject')
+      .leftJoin('userProject.user', 'user');
+    await query.select([
+      'project',
+      'task.id',
+      'task.name',
+      'userProject.role',
+      'user.id',
+      'user.fullname',
+    ]);
+    const project = await query.getOne();
+    if (!project) {
+      throw new NotFoundException('Project not found');
     }
-    return task;
+    return project;
   }
 
-  async update(
-    id: string,
-    updateProjectDto: UpdateProjectDto,
-  ): Promise<ProjectEntity> {
-    const project = await this.findOne(id);
-    const { name, project_type, start_date, end_date, is_active } =
-      updateProjectDto;
-    project.name = name;
-    project.project_type = project_type;
-    project.start_date = start_date;
-    project.end_date = end_date;
-    project.is_active = is_active;
-    await this.projectRepository.save(project);
+  async addTaskToProject(manageTasksDto: ManageTasksDto): Promise<any> {
+    const { project_id, task_id } = manageTasksDto;
+    const project = await this.findOne(project_id);
+    const task = await this.taskService.findOne(task_id);
+    project.tasks.push(task);
+    return await this.projectRepository.save(project);
+  }
+
+  async removeTaskFromProject(manageTasksDto: ManageTasksDto): Promise<any> {
+    const { project_id, task_id } = manageTasksDto;
+    const project = await this.findOne(project_id);
+    project.tasks = project.tasks.filter((task) => task.id !== task_id);
+    return await this.projectRepository.save(project);
+  }
+
+  async addUserToProject(createProjectDto: CreateUserProjectDto): Promise<any> {
+    const { project_id, user_id, role } = createProjectDto;
+    const userProjectExist =
+      await this.userProjectService.findByUserIdAndProjectId(createProjectDto);
+    if (userProjectExist) {
+      // console.log('userProjectExist', userProjectExist);
+      await this.userProjectService.updateRole(userProjectExist.id, role);
+    } else {
+      await this.userProjectService.create(createProjectDto);
+    }
+    const project = await this.findOne(project_id);
+    return project;
+  }
+
+  async removeUserFromProject(
+    createUserProject: CreateUserProjectDto,
+  ): Promise<any> {
+    // remove user project
+    await this.userProjectService.remove(createUserProject);
+    const project = await this.findOne(createUserProject.project_id);
     return project;
   }
 }

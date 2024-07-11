@@ -1,0 +1,1372 @@
+openapi: 3.0.3
+info:
+  title: Timesheet API
+  description: |-
+    This is a server for the Timesheet API - a simple API for tracking work hours of employees.
+    The API is RESTful and uses JSON for serialization.
+
+    Main features:
+    - Authentication with JWT
+    - Role-based access control (RBAC)
+    - Upload images for user avatar
+    - CRUD operations for employees
+    - CRUD operations for projects
+    - CRUD operations for timesheets
+
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: anhtu211168@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: http://localhost:3000
+tags:
+  - name: auth
+    description: Operations about authentication
+  - name: users
+    description: Admin - Manage user
+  - name: clients
+    description: Admin - Manage client
+  - name: tasks
+    description: Admin - Manage task
+  - name: projects
+    description: Admin - Manage project
+  - name: User timesheets
+    description: User - Manage timesheet by Day
+  - name: PM timesheets
+    description: PM - Manage pending approval timesheet
+paths:
+  /auth/register:
+    post:
+      tags:
+        - auth
+      summary: Register
+      description: Register a new user
+      operationId: register
+      requestBody:
+        description: User object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '200':
+          description: Register successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: Login
+      description: Login with username and password
+      operationId: login
+      requestBody:
+        description: User credentials
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginBody'
+        required: true
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessAuthentication'
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: User doesn't exist
+  /auth/refresh-token:
+    post:
+      tags:
+        - auth
+      summary: Refresh token
+      description: Refresh token
+      operationId: refreshToken
+      requestBody:
+        description: Refresh token
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImEyNGQ3ZjI1LWMwMzktNDRiNC05NDJhLTQ3MjhiN2RmNzc1YiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MTk5MDIwNjksImV4cCI6MTcxOTk4ODQ2OX0.AwHmkN3iAlDzBpjUf08OCkFFhRlyhVw0bvLbZJCi_fM
+        required: true
+      responses:
+        '200':
+          description: Refresh token successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessAuthentication'
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+
+  /users:
+    post:
+      tags:
+        - users
+      summary: Add a new user
+      description: Add a new user
+      operationId: addUser
+      requestBody:
+        description: User object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Create user successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+    get:
+      tags:
+        - users
+      summary: Get all users
+      description: Get all users
+      operationId: getAllUsers
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Get all users successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: Unauthorized
+    patch:
+      tags:
+        - users
+      summary: Update an existing user
+      description: Update an existing user by ID
+      operationId: updateUser
+
+      requestBody:
+        description: Update an existent user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Update user successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: User not found
+        '401':
+          description: Unauthorized
+
+  /users/{id}:
+    get:
+      tags:
+        - users
+      summary: Get user by ID
+      description: Get user by ID
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          description: ID of user to return
+          required: true
+          schema:
+            type: string
+          example: a24d7f25-c039-44b4-942a-4728b7df775b
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Get user by ID successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: User not found
+        '401':
+          description: Unauthorized
+
+    delete:
+      tags:
+        - users
+      summary: Delete a user
+      description: Soft Delete a user by ID
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          description: ID of user to delete
+          required: true
+          schema:
+            type: string
+          example: a24d7f25-c039-44b4-942a-4728b7df775b
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Delete user successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User deleted
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: User not found
+        '401':
+          description: Unauthorized
+  /users/upload-avatar:
+    post:
+      tags:
+        - users
+      summary: Upload avatar
+      description: Upload an images for user avatar
+      operationId: uploadAvatar
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Upload avatar successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  generatedMaps:
+                    type: array
+                    example: []
+                  raw:
+                    type: array
+                    example: []
+                  affected:
+                    type: number
+                    example: 1
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+  /users/import-users-from-file:
+    post:
+      tags:
+        - users
+      summary: Import users from file
+      description: Import users from file
+      operationId: importUsersFromFile
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Import users from file successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  generatedMaps:
+                    type: array
+                    example: []
+                  raw:
+                    type: array
+                    example: []
+                  affected:
+                    type: number
+                    example: 1
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+
+  /users/export-users-to-file:
+    get:
+      tags:
+        - users
+      summary: Export users to file
+      description: Export users to file
+      operationId: exportUsersToFile
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Export users to file successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Export users to file successful
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+
+  /clients:
+    post:
+      tags:
+        - clients
+      summary: Add a new client
+      description: Add a new client
+      operationId: addClient
+      requestBody:
+        description: Client object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Client'
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Create client successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+    get:
+      tags:
+        - clients
+      summary: Get all clients
+      description: Get all clients
+      operationId: getAllClients
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Get all clients successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Client'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: Unauthorized
+    patch:
+      tags:
+        - clients
+      summary: Update an existing client
+      description: Update an existing client by ID
+      operationId: updateClient
+      requestBody:
+        description: Update an existent client
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Client'
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Update client successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Client not found
+        '401':
+          description: Unauthorized
+
+  /clients/{id}:
+    delete:
+      tags:
+        - clients
+      summary: Delete a client
+      description: Soft Delete a client by ID
+      operationId: deleteClient
+      parameters:
+        - name: id
+          in: path
+          description: ID of client to delete
+          required: true
+          schema:
+            type: string
+          example: a24d7f25-c039-44b4-942a-4728b7df775b
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Delete client successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Client deleted
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Client not found
+        '401':
+          description: Unauthorized
+
+  /tasks:
+    post:
+      tags:
+        - tasks
+      summary: Add a new task
+      description: Add a new task
+      operationId: addTask
+      requestBody:
+        description: Task object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Create task successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+    patch:
+      tags:
+        - tasks
+      summary: Update an existing task
+      description: Update an existing task by ID
+      operationId: updateTask
+      requestBody:
+        description: Update an existent task
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Update task successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Task not found
+        '401':
+          description: Unauthorized
+
+  /tasks/{id}:
+    get:
+      tags:
+        - tasks
+      summary: Get task by ID
+      description: Get task by ID
+      operationId: getTaskById
+      parameters:
+        - name: id
+          in: path
+          description: ID of task to return
+          required: true
+          schema:
+            type: string
+          example: a24d7f25-c039-44b4-942a-4728b7df775b
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Get task by ID successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Task not found
+        '401':
+          description: Unauthorized
+
+    delete:
+      tags:
+        - tasks
+      summary: Delete a task
+      description: Soft Delete a task by ID
+      operationId: deleteTask
+      parameters:
+        - name: id
+          in: path
+          description: ID of task to delete
+          required: true
+          schema:
+            type: string
+          example: a24d7f25-c039-44b4-942a-4728b7df775b
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Delete task successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Task deleted
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Task not found
+        '401':
+          description: Unauthorized
+
+  /tasks?search={search}&is_active={is_active}:
+    get:
+      tags:
+        - tasks
+      summary: Get all tasks
+      description: Get all tasks
+      operationId: getAllTasks
+      parameters:
+        - name: search
+          in: query
+          description: Search task by name
+          required: false
+          schema:
+            type: string
+          example: Task1
+        - name: is_active
+          in: query
+          description: Filter task by status
+          required: false
+          schema:
+            type: string
+          example: ACTIVE
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Get all tasks successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Task'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: Unauthorized
+
+  /tasks/archive:
+    patch:
+      tags:
+        - tasks
+      summary: Archive task
+      description: Update task status by ID
+      operationId: updateTaskStatus
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Update task status successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Task not found
+        '401':
+          description: Unauthorized
+
+  /projects:
+    get:
+      tags:
+        - projects
+      summary: Get all projects
+      description: Get all projects
+      operationId: getAllProjects
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Get all projects successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: Unauthorized
+    post:
+      tags:
+        - projects
+      summary: Add a new project
+      description: Add a new project
+      operationId: addProject
+      requestBody:
+        description: Project object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Create project successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+    patch:
+      tags:
+        - projects
+      summary: Update an existing project
+      description: Update an existing project by ID
+      operationId: updateProject
+      parameters:
+        - name: id
+          in: path
+          description: ID of project to update
+          required: true
+          schema:
+            type: string
+          example: a24d7f25-c039-44b4-942a-4728b7df775b
+      requestBody:
+        description: Update an existent project
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Update project successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Project not found
+        '401':
+          description: Unauthorized
+
+    delete:
+      tags:
+        - projects
+      summary: Delete a project
+      description: Soft Delete a project by ID
+      operationId: deleteProject
+      parameters:
+        - name: id
+          in: path
+          description: ID of project to delete
+          required: true
+          schema:
+            type: string
+          example: a24d7f25-c039-44b4-942a-4728b7df775b
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Delete project successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Project deleted
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Project not found
+        '401':
+          description: Unauthorized
+
+  /projects/manage-users:
+    post:
+      tags:
+        - projects
+      summary: Manage users in project
+      description: update project_id of users
+      operationId: manageUsersInProject
+      requestBody:
+        description: Manage users in project
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                project_id:
+                  type: string
+                  example: a24d7f25-c039-44b4-942a-4728b7df775b
+                user_id:
+                  type: array
+                  example:
+                    [
+                      a24d7f25-c039-44b4-942a-4728b7df775b,
+                      a24d7f25-c039-44b4-942a-4728b7df775b,
+                    ]
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Add user to project successful
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Project'
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+
+  /projects/manage-tasks:
+    post:
+      tags:
+        - projects
+      summary: Manage tasks in project
+      description: update project_id of tasks
+      operationId: manageTasksInProject
+      requestBody:
+        description: Manage tasks in project
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                project_id:
+                  type: string
+                  example: a24d7f25-c039-44b4-942a-4728b7df775b
+                task_id:
+                  type: array
+                  example:
+                    [
+                      a24d7f25-c039-44b4-942a-4728b7df775b,
+                      a24d7f25-c039-44b4-942a-4728b7df775b,
+                    ]
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Add task to project successful
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Project'
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+
+  /timesheets:
+    get:
+      tags:
+        - User timesheets
+      summary: Get all timesheets of a User
+      description: Get all timesheets
+      operationId: getAllTimesheets
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Get all timesheets successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Timesheet'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: Unauthorized
+
+  /timesheets/create:
+    post:
+      tags:
+        - User timesheets
+      summary: Add a new timesheet
+      description: Add a new timesheet
+      operationId: addTimesheet
+      requestBody:
+        description: Timesheet object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Timesheet'
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Create timesheet successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Timesheet'
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+
+  /timesheets/submit-to-pending:
+    post:
+      tags:
+        - User timesheets
+      summary: Submit timesheet by week
+      description: User submit timesheet by week for approval
+      operationId: submitTimesheetByWeek
+      requestBody:
+        description: Submit timesheet by week
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                from_date:
+                  type: string
+                  format: date-time
+                  example: '2024-07-01T10:56:04.000Z'
+                to_date:
+                  type: string
+                  format: date-time
+                  example: '2024-07-07T10:56:04.000Z'
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Submit timesheet by week successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Submit timesheet by week successful
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+
+  /timesheets/get-all?from_date={from_date}&to_date={to_date}&status={status}:
+    get:
+      tags:
+        - PM timesheets
+      summary: Get timesheet by status
+      description: Get timesheet by status and ID user(or username) in the token
+      operationId: getTimesheetByStatus
+      parameters:
+        - name: status
+          in: path
+          description: Status of timesheet to return
+          required: true
+          schema:
+            type: string
+          example: PENDING
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Get timesheet by status successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Timesheet'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: Unauthorized
+
+  /timesheets/approve-timesheets:
+    post:
+      tags:
+        - PM timesheets
+      summary: Approve timesheet by week
+      description: PM approve timesheet by week
+      operationId: approveTimesheetByWeek
+      requestBody:
+        description: Approve timesheet by week
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                from_date:
+                  type: string
+                  format: date-time
+                  example: '2024-07-01T10:56:04.000Z'
+                to_date:
+                  type: string
+                  format: date-time
+                  example: '2024-07-07T10:56:04.000Z'
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Approve timesheet by week successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Approve timesheet by week successful
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+
+components:
+  schemas:
+    LoginBody:
+      type: object
+      properties:
+        username:
+          type: string
+          example: admin
+        password:
+          type: string
+          example: 123456
+    SuccessAuthentication:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImEyNGQ3ZjI1LWMwMzktNDRiNC05NDJhLTQ3MjhiN2RmNzc1YiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MTk5MDIwNjksImV4cCI6MTcxOTkwNTY2OX0.oMBKVp1HhthFkLf7LEJl-4WL5lG2wxU0kTb-6vLeutw
+        refresh_token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImEyNGQ3ZjI1LWMwMzktNDRiNC05NDJhLTQ3MjhiN2RmNzc1YiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MTk5MDIwNjksImV4cCI6MTcxOTk4ODQ2OX0.AwHmkN3iAlDzBpjUf08OCkFFhRlyhVw0bvLbZJCi_fM
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: a24d7f25-c039-44b4-942a-4728b7df775b
+        username:
+          type: string
+          example: user1
+        password:
+          type: string
+          example: 123456
+        identify:
+          type: string
+          example: ID987654321
+        fullname:
+          type: string
+          example: Nguyễn Nhân Viên
+        sex:
+          type: string
+          example: FEMALE
+        dob:
+          type: string
+          format: date-time
+          example: '1992-02-02T00:00:00.000Z'
+        email:
+          type: string
+          example: jane.doe@example.com
+        phone_number:
+          type: string
+          example: '+1234567891'
+        emergency_contact:
+          type: string
+          example: '+0987654322'
+        place_of_origin:
+          type: string
+          example: CityC
+        place_of_residence:
+          type: string
+          example: CityD
+        current_address:
+          type: string
+          example: 456AnotherStCityD
+        start_date:
+          type: string
+          format: date-time
+          example: '2024-07-01T10:56:04.000Z'
+        user_type:
+          type: string
+          example: STAFF
+        role:
+          type: string
+          example: PM
+        bankID:
+          type: string
+          example: BANK654321
+        taxID:
+          type: string
+          example: TAX654321
+        basic_trainer_id:
+          type: string
+          example: a24d7f25-c039-44b4-942a-4728b7df775b
+        level:
+          $ref: '#/components/schemas/UserLevel'
+        refresh_token:
+          type: string
+          nullable: true
+        avatar:
+          type: string
+          nullable: true
+        branch_id:
+          type: string
+          example: a24d7f25-c039-44b4-942a-4728b7df775b
+        position_id:
+          type: string
+          example: a24d7f25-c039-44b4-942a-4728b7df775b
+        is_active:
+          type: string
+          example: ACTIVE
+        created_at:
+          type: string
+          format: date-time
+          example: '2024-07-01T10:56:04.000Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2024-07-01T10:56:04.000Z'
+    UserLevel:
+      type: string
+      enum: [I0, I1, I2, I3, F1, F2, F3, M1, M2, M3, S1, S2, S3]
+      example: M1
+
+    Pagination:
+      type: object
+      properties:
+        total:
+          type: integer
+          example: 8
+        per_page:
+          type: integer
+          example: 2
+        current_page:
+          type: integer
+          example: 4
+        last_page:
+          type: integer
+          example: 4
+        next_page:
+          type: integer
+          nullable: true
+          example: null
+        prev_page:
+          type: integer
+          nullable: true
+          example: 3
+    Client:
+      type: object
+      properties:
+        id:
+          type: string
+          example: a24d7f25-c039-44b4-942a-4728b7df775b
+        name:
+          type: string
+          example: Client1
+        is_active:
+          type: string
+          example: ACTIVE
+        created_at:
+          type: string
+          format: date-time
+          example: '2024-07-01T10:56:04.000Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2024-07-01T10:56:04.000Z'
+
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+          example: a24d7f25-c039-44b4-942a-4728b7df775b
+        name:
+          type: string
+          example: Project1
+        project_type:
+          type: string
+          example: TRAINING
+        start_date:
+          type: string
+          format: date-time
+          example: '2024-07-01T10:56:04.000Z'
+        end_date:
+          type: string
+          format: date-time
+          example: '2024-07-01T10:56:04.000Z'
+        is_active:
+          type: string
+          example: ACTIVE
+        created_at:
+          type: string
+          format: date-time
+          example: '2024-07-01T10:56:04.000Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2024-07-01T10:56:04.000Z'
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          example: a24d7f25-c039-44b4-942a-4728b7df775b
+        name:
+          type: string
+          example: Task1
+        project_id:
+          type: string
+          example: a24d7f25-c039-44b4-942a-4728b7df775b
+        is_active:
+          type: string
+          example: ACTIVE
+        created_at:
+          type: string
+          format: date-time
+          example: '2024-07-01T10:56:04.000Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2024-07-01T10:56:04.000Z'
+    Timesheet:
+      type: object
+      properties:
+        id:
+          type: string
+          example: a24d7f25-c039-44b4-942a-4728b7df775b
+        note:
+          type: string
+          example: implement CRUD task
+        work_hours:
+          type: number
+          example: 8
+        status:
+          type: string
+          example: PENDING
+        is_active:
+          type: string
+          example: ACTIVE
+        created_at:
+          type: string
+          format: date-time
+          example: '2024-07-01T10:56:04.000Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2024-07-01T10:56:04.000Z'
+        project_id:
+          type: string
+          example: a24d7f25-c039-44b4-942a-4728b7df775b
+        task_id:
+          type: string
+          example: a24d7f25-c039-44b4-942a-4728b7df775b
+        user_id:
+          type: string
+          example: a24d7f25-c039-44b4-942a-4728b7df775b
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

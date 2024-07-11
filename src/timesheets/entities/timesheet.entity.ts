@@ -13,7 +13,7 @@ export class TimesheetEntity extends BaseEntity {
   @Column()
   note: string;
 
-  @Column({ default: StatusEnum.PENDING })
+  @Column({ default: StatusEnum.NEW })
   status: string;
 
   @ManyToOne(() => UserEntity, (user) => user.timesheets)

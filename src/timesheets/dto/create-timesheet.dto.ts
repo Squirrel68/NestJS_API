@@ -10,14 +10,11 @@ export class CreateTimesheetDto {
 
   @IsOptional()
   @IsEnum(StatusEnum)
-  status;
+  status: string = StatusEnum.NEW;
 
   @IsNotEmpty()
   project_id: string;
 
   @IsNotEmpty()
   task_id: string;
-
-  @IsNotEmpty()
-  user_id: string;
 }

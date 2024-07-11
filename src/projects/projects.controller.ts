@@ -5,71 +5,45 @@ import {
   Body,
   Patch,
   Param,
-  Query,
+  Delete,
 } from '@nestjs/common';
-import { ProjectsService } from './projects.service';
-import { CreateProjectDto } from './dto/create-project.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
-import { ProjectEntity } from './entities/project.entity';
-import { GetProjectFilterDto } from './dto/filter-project-dto';
-import { RoleEnum } from 'src/common/role.enum';
+import { PositionsService } from './positions.service';
+import { CreatePositionDto } from './dto/create-position.dto';
+import { UpdatePositionDto } from './dto/update-position.dto';
+import { PositionEntity } from './entities/position.entity';
 import { Roles } from 'src/auth/decorator/role.decorator';
-import { ManageTasksDto } from './dto/manage-task.dto';
-import { CreateUserProjectDto } from 'src/user_project/dto/create-user_project.dto';
+import { RoleEnum } from 'src/common/role.enum';
 
-@Controller('projects')
-export class ProjectsController {
-  constructor(private readonly projectsService: ProjectsService) {}
+@Roles(RoleEnum.ADMIN)
+@Controller('positions')
+export class PositionsController {
+  constructor(private readonly positionsService: PositionsService) {}
 
-  @Roles(RoleEnum.ADMIN)
   @Post()
-  create(@Body() createProjectDto: CreateProjectDto): Promise<ProjectEntity> {
-    return this.projectsService.create(createProjectDto);
+  create(@Body() createPositionDto: CreatePositionDto) {
+    return this.positionsService.create(createPositionDto);
   }
 
-  @Roles(RoleEnum.ADMIN, RoleEnum.USER, RoleEnum.PM)
   @Get()
-  findAll(@Query() filterDto: GetProjectFilterDto): Promise<ProjectEntity[]> {
-    return this.projectsService.findAll(filterDto);
+  findAll() {
+    return this.positionsService.findAll();
   }
 
-  @Roles(RoleEnum.ADMIN, RoleEnum.USER, RoleEnum.PM)
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<ProjectEntity> {
-    return this.projectsService.findOne(id);
+  findOne(@Param('id') id: string) {
+    return this.positionsService.findOne(id);
   }
 
-  @Roles(RoleEnum.ADMIN)
-  @Patch()
-  update(@Body() updateProjectDto: UpdateProjectDto): Promise<ProjectEntity> {
-    return this.projectsService.update(updateProjectDto);
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updatePositionDto: UpdatePositionDto,
+  ): Promise<PositionEntity> {
+    return this.positionsService.update(id, updatePositionDto);
   }
 
-  @Roles(RoleEnum.ADMIN)
-  @Post('add-task')
-  addTaskToProject(@Body() manageTasksDto: ManageTasksDto): Promise<any> {
-    return this.projectsService.addTaskToProject(manageTasksDto);
-  }
-
-  @Roles(RoleEnum.ADMIN)
-  @Post('remove-task')
-  removeTaskFromProject(@Body() manageTasksDto: ManageTasksDto): Promise<any> {
-    return this.projectsService.removeTaskFromProject(manageTasksDto);
-  }
-
-  @Roles(RoleEnum.ADMIN)
-  @Post('add-user')
-  addUserToProject(
-    @Body() createUserProjectDto: CreateUserProjectDto,
-  ): Promise<any> {
-    return this.projectsService.addUserToProject(createUserProjectDto);
-  }
-
-  @Roles(RoleEnum.ADMIN)
-  @Post('remove-user')
-  removeUserFromProject(
-    @Body() CreateUserProjectDto: CreateUserProjectDto,
-  ): Promise<any> {
-    return this.projectsService.removeUserFromProject(CreateUserProjectDto);
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.positionsService.remove(id);
   }
 }

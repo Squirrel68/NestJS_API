@@ -17,6 +17,9 @@ import { BranchEntity } from 'src/branches/entities/branch.entity';
 import { PositionEntity } from 'src/positions/entities/position.entity';
 import { BranchesService } from 'src/branches/branches.service';
 import { PositionsService } from 'src/positions/positions.service';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { MailerService } from '@nestjs-modules/mailer';
+
 const XLSX = require('xlsx');
 const fs = require('fs');
 
@@ -31,6 +34,7 @@ export class UsersService {
     private positionRepository: Repository<PositionEntity>,
     private branchService: BranchesService,
     private positionService: PositionsService,
+    private mailerService: MailerService,
   ) {}
   async create(createUserDto: CreateUserDto) {
     const hashPassword = await this.hashPassword(createUserDto.password);
@@ -245,5 +249,19 @@ export class UsersService {
     const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
     res.attachment('users.xlsx');
     return res.send(buffer);
+  }
+
+  @Cron(CronExpression.EVERY_5_SECONDS)
+  async sendEmailAuto() {
+    await this.mailerService.sendMail({
+      to: 'tektoy68@gmail.com',
+      subject: 'Testing Nest MailerModule ✔',
+      template: './dailyMail',
+      context: {
+        code: 'cf1a3f828287',
+        username: 'john doe',
+      },
+    });
+    console.log('Email sent');
   }
 }

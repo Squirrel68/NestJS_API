@@ -1141,7 +1141,7 @@ paths:
                     type: string
                     example: Unauthorized
 
-  /timesheets/approve-timesheets:
+  /timesheets/approve-timesheet:
     post:
       tags:
         - PM timesheets

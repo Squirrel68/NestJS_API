@@ -3,6 +3,8 @@ declare const module: any;
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import helmet from 'helmet';
+import * as csurf from 'csurf';
 
 const fs = require('fs');
 const path = require('path');
@@ -20,9 +22,12 @@ async function bootstrap() {
       whitelist: true, // solve "Excluding unknown property" error https://github.com/typestack/class-transformer/issues/700
     }),
   );
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  // middleware
   app.enableCors();
+  app.use(helmet());
+  // app.use(csurf()); //deprecated
   await app.listen(3000);
 
   if (module.hot) {

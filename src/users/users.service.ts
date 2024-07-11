@@ -19,6 +19,7 @@ import { BranchesService } from 'src/branches/branches.service';
 import { PositionsService } from 'src/positions/positions.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { MailerService } from '@nestjs-modules/mailer';
+
 const XLSX = require('xlsx');
 const fs = require('fs');
 

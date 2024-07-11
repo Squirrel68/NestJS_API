@@ -64,6 +64,8 @@ import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
   ],
   providers: [
     AppService,
+  ],
+  providers: [
     {
       provide: APP_GUARD,
       useClass: AuthGuard,

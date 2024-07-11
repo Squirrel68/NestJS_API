@@ -20,7 +20,7 @@ export class TimesheetsController {
   }
 
   @Roles(RoleEnum.USER, RoleEnum.ADMIN, RoleEnum.PM)
-  @Post()
+  @Post('create')
   create(@Req() req: any, @Body() createTimesheetDto: CreateTimesheetDto) {
     return this.timesheetsService.createTimesheetByDay(req, createTimesheetDto);
   }

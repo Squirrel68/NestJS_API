@@ -250,7 +250,7 @@ export class UsersService {
     return res.send(buffer);
   }
 
-  @Cron(CronExpression.EVERY_5_SECONDS)
+  @Cron(CronExpression.EVERY_DAY_AT_9AM)
   async sendEmailAuto() {
     await this.mailerService.sendMail({
       to: 'tektoy68@gmail.com',
@@ -261,6 +261,6 @@ export class UsersService {
         username: 'john doe',
       },
     });
-    console.log('Email sent');
+    console.log(`Send email at ${new Date().toLocaleString()}`);
   }
 }

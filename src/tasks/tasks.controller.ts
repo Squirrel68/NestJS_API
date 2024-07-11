@@ -52,11 +52,8 @@ export class TasksController {
   }
 
   @Roles(RoleEnum.ADMIN)
-  @Patch(':id/archive')
-  archiveTask(
-    @Param('id') id: string,
-    @Body() is_active: IsActive,
-  ): Promise<TaskEntity> {
+  @Patch('/archive')
+  archiveTask(@Body() id: string, is_active: IsActive): Promise<TaskEntity> {
     return this.tasksService.archiveTask(id, is_active);
   }
 }

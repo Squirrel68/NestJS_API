@@ -5,7 +5,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 import * as csurf from 'csurf';
-
+import { ConfigService } from '@nestjs/config';
 const fs = require('fs');
 const path = require('path');
 const YAML = require('yaml');
@@ -13,6 +13,7 @@ const swaggerUi = require('swagger-ui-express');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
   const file = fs.readFileSync(path.resolve('timesheet-swagger.yaml'), 'utf8');
 
   const swaggerDocument = YAML.parse(file);
@@ -28,7 +29,8 @@ async function bootstrap() {
   app.enableCors();
   app.use(helmet());
   // app.use(csurf()); //deprecated
-  await app.listen(3000);
+  const PORT = configService.get<string>('PORT') || 3000;
+  await app.listen(PORT);
 
   if (module.hot) {
     module.hot.accept();

@@ -846,7 +846,7 @@ paths:
         '401':
           description: Unauthorized
 
-  /projects/manage-users:
+  /projects/add-user:
     post:
       tags:
         - projects
@@ -864,12 +864,43 @@ paths:
                   type: string
                   example: a24d7f25-c039-44b4-942a-4728b7df775b
                 user_id:
-                  type: array
-                  example:
-                    [
-                      a24d7f25-c039-44b4-942a-4728b7df775b,
-                      a24d7f25-c039-44b4-942a-4728b7df775b,
-                    ]
+                  type: string
+                  example: a24d7f25-c039-44b4-942a-4728b7df775b
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Add user to project successful
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Project'
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+  /projects/remove-user:
+    post:
+      tags:
+        - projects
+      summary: Manage users in project
+      description: update project_id of users
+      operationId: manageUsersInProject
+      requestBody:
+        description: Manage users in project
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                project_id:
+                  type: string
+                  example: a24d7f25-c039-44b4-942a-4728b7df775b
+                user_id:
+                  type: string
+                  example: a24d7f25-c039-44b4-942a-4728b7df775b
         required: true
       security:
         - BearerAuth: []
@@ -886,7 +917,7 @@ paths:
         '401':
           description: Unauthorized
 
-  /projects/manage-tasks:
+  /projects/add-task:
     post:
       tags:
         - projects
@@ -904,12 +935,43 @@ paths:
                   type: string
                   example: a24d7f25-c039-44b4-942a-4728b7df775b
                 task_id:
-                  type: array
-                  example:
-                    [
-                      a24d7f25-c039-44b4-942a-4728b7df775b,
-                      a24d7f25-c039-44b4-942a-4728b7df775b,
-                    ]
+                  type: string
+                  example: a24d7f25-c039-44b4-942a-4728b7df775b
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Add task to project successful
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Project'
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+  /projects/remove-task:
+    post:
+      tags:
+        - projects
+      summary: Manage tasks in project
+      description: update project_id of tasks
+      operationId: manageTasksInProject
+      requestBody:
+        description: Manage tasks in project
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                project_id:
+                  type: string
+                  example: a24d7f25-c039-44b4-942a-4728b7df775b
+                task_id:
+                  type: string
+                  example: a24d7f25-c039-44b4-942a-4728b7df775b
         required: true
       security:
         - BearerAuth: []
@@ -1079,7 +1141,7 @@ paths:
                     type: string
                     example: Unauthorized
 
-  /timesheets/approve-timesheets:
+  /timesheets/approve-timesheet:
     post:
       tags:
         - PM timesheets

@@ -3,7 +3,9 @@ declare const module: any;
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-
+import helmet from 'helmet';
+import * as csurf from 'csurf';
+import { ConfigService } from '@nestjs/config';
 const fs = require('fs');
 const path = require('path');
 const YAML = require('yaml');
@@ -11,6 +13,7 @@ const swaggerUi = require('swagger-ui-express');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
   const file = fs.readFileSync(path.resolve('timesheet-swagger.yaml'), 'utf8');
 
   const swaggerDocument = YAML.parse(file);
@@ -20,10 +23,14 @@ async function bootstrap() {
       whitelist: true, // solve "Excluding unknown property" error https://github.com/typestack/class-transformer/issues/700
     }),
   );
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  // middleware
   app.enableCors();
-  await app.listen(3000);
+  app.use(helmet());
+  // app.use(csurf()); //deprecated
+  const PORT = configService.get<string>('PORT') || 3000;
+  await app.listen(PORT);
 
   if (module.hot) {
     module.hot.accept();

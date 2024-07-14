@@ -10,10 +10,10 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 
 export const dataSourceOptions: DataSourceOptions = {
   type: 'mysql',
-  host: 'localhost',
-  port: 3306,
-  username: 'root',
-  password: '',
+  host: 'mysql',
+  port: 3307,
+  username: 'ncc_timesheet',
+  password: 'ncc_timesheet',
   database: 'ncc_timesheet',
   entities: [
     UserEntity,

@@ -27,11 +27,7 @@ async function bootstrap() {
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   // middleware
   app.use(helmet());
-  app.enableCors({
-    origin: configService.get<string>('SWAGGER_URL') || '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-  });
+  app.enableCors();
   // app.use(csurf()); //deprecated
   const PORT = configService.get<string>('PORT') || 3000;
   await app.listen(PORT);

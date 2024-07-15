@@ -25,6 +25,7 @@ externalDocs:
   url: http://swagger.io
 servers:
   - url: http://localhost:3000
+  - url: https://timesheet-api-moe6.onrender.com/
 tags:
   - name: auth
     description: Operations about authentication

@@ -38,7 +38,10 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     TimesheetsModule,
     UserProjectModule,
     AuthModule,
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env', '.env.development'],
+    }),
     CacheModule.register(),
     ThrottlerModule.forRoot([{ ttl: 5000, limit: 2 }]),
     MailerModule.forRootAsync({

@@ -12,7 +12,7 @@ export class AppService {
     private userService: UsersService,
   ) {}
   getHello(): string {
-    return 'Hello World!';
+    return 'Hello NestJs app !!!';
   }
 
   async setUserEmailsList() {

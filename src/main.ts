@@ -28,7 +28,7 @@ async function bootstrap() {
   // middleware
   app.use(helmet());
   app.enableCors({
-    origin: '*',
+    origin: configService.get<string>('SWAGGER_URL') || '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });

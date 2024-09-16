@@ -1,60 +1,46 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Req } from '@nestjs/common';
 import { TimesheetsService } from './timesheets.service';
-import { CreateTimesheetDto } from './dto/create-timesheet.dto';
-import { UpdateTimesheetDto } from './dto/update-timesheet.dto';
-import { StatusEnum } from 'src/common/status.enum';
 import { Roles } from 'src/auth/decorator/role.decorator';
 import { RoleEnum } from 'src/common/role.enum';
+import { StartEndDateDto } from './dto/start-end-date.dto';
+import { CreateTimesheetDto } from './dto/create-timesheet.dto';
+import { StatusEnum } from 'src/common/status.enum';
+import { start } from 'repl';
+import { query } from 'express';
 
 @Controller('timesheets')
 export class TimesheetsController {
   constructor(private readonly timesheetsService: TimesheetsService) {}
 
-  @Roles(RoleEnum.ADMIN, RoleEnum.USER, RoleEnum.PM)
-  @Post()
-  create(@Body() createTimesheetDto: CreateTimesheetDto) {
-    return this.timesheetsService.create(createTimesheetDto);
-  }
-
-  @Roles(RoleEnum.ADMIN, RoleEnum.USER, RoleEnum.PM)
+  // My timesheets - For User
+  @Roles(RoleEnum.USER, RoleEnum.ADMIN, RoleEnum.PM)
   @Get()
-  findAll(@Query('status') status: StatusEnum) {
-    return this.timesheetsService.findAll(status);
+  getTimesheetByUserId(@Req() req: Request, @Query() query: StartEndDateDto) {
+    return this.timesheetsService.findMyTimesheetByDay(req, query);
   }
 
-  @Roles(RoleEnum.ADMIN, RoleEnum.USER, RoleEnum.PM)
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.timesheetsService.findOne(id);
+  @Roles(RoleEnum.USER, RoleEnum.ADMIN, RoleEnum.PM)
+  @Post('create')
+  create(@Req() req: any, @Body() createTimesheetDto: CreateTimesheetDto) {
+    return this.timesheetsService.createTimesheetByDay(req, createTimesheetDto);
   }
 
-  @Roles(RoleEnum.USER, RoleEnum.PM)
-  @Patch(':id')
-  updateWithoutStatus(
-    @Param('id') id: string,
-    @Body() updateTimesheetDto: UpdateTimesheetDto,
-  ) {
-    return this.timesheetsService.update(id, updateTimesheetDto);
+  @Roles(RoleEnum.USER, RoleEnum.ADMIN, RoleEnum.PM)
+  @Post('submit-to-pending')
+  submitToPending(@Req() req: any, @Body() startEndDateDto: StartEndDateDto) {
+    return this.timesheetsService.submitToPending(req, startEndDateDto);
+  }
+
+  // timesheet for PM
+  @Roles(RoleEnum.PM)
+  @Get('get-all')
+  getTimesheetByStatus(@Query() query: StartEndDateDto) {
+    return this.timesheetsService.getByStatus(query);
   }
 
   @Roles(RoleEnum.PM)
-  @Patch(':id/status')
-  updateStatus(@Param('id') id: string, @Body('status') status: StatusEnum) {
-    // console.log('status', status);
-  }
-
-  @Roles(RoleEnum.ADMIN, RoleEnum.USER, RoleEnum.PM)
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.timesheetsService.remove(id);
+  @Post('approve-timesheet')
+  approveTimesheet(@Body() body: StartEndDateDto) {
+    return this.timesheetsService.approveTimesheet(body);
   }
 }

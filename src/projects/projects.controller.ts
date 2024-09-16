@@ -15,7 +15,6 @@ import { GetProjectFilterDto } from './dto/filter-project-dto';
 import { RoleEnum } from 'src/common/role.enum';
 import { Roles } from 'src/auth/decorator/role.decorator';
 import { ManageTasksDto } from './dto/manage-task.dto';
-import { ManageUsersDto } from './dto/manage-user.dto';
 import { CreateUserProjectDto } from 'src/user_project/dto/create-user_project.dto';
 
 @Controller('projects')

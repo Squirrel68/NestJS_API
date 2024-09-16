@@ -6,8 +6,6 @@ import { UserEntity } from './entities/user.entity';
 import { ConfigModule } from '@nestjs/config';
 import { BranchEntity } from 'src/branches/entities/branch.entity';
 import { PositionEntity } from 'src/positions/entities/position.entity';
-import { BranchesModule } from 'src/branches/branches.module';
-import { PositionsModule } from 'src/positions/positions.module';
 import { BranchesService } from 'src/branches/branches.service';
 import { PositionsService } from 'src/positions/positions.service';
 
